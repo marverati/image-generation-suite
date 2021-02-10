@@ -25,4 +25,20 @@ export default class ProjectState {
   public getOpenSnippet(): Snippet | null {
     return this.currentlyOpenSnippet;
   }
+
+  public runCode(): void {
+    if (this.currentlyOpenSnippet != null) {
+      const code = this.currentlyOpenSnippet.getCode();
+      try {
+        const func = new Function(code);
+        func();
+      } catch (e) {
+        this.handleError(e);
+      }
+    }
+  }
+
+  public handleError(e: Error): void {
+    console.error(e);
+  }
 }

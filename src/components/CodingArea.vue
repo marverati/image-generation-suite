@@ -1,6 +1,6 @@
 <template>
   <div class="code-area">
-      <div class="content" v-if="currentSnippet != null">
+      <div class="content" v-if="currentSnippet != null" @keydown="handleKey">
         <h1>{{currentSnippet.name}}</h1>
         <textarea class="code" v-model="currentCode" />
       </div>
@@ -30,6 +30,16 @@ export default defineComponent({
     project: {
       type: ProjectState,
       required: true
+    }
+  },
+  methods: {
+    handleKey(e: KeyboardEvent) {
+      if (e.code === "Enter" && e.ctrlKey) {
+        this.runCode();
+      }
+    },
+    runCode(): void {
+      this.project.runCode();
     }
   },
   watch: {
