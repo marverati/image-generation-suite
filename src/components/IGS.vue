@@ -4,22 +4,40 @@
     <CodingArea class="grid-a" />
     <Parameters class="grid-b" />
     <PreviewArea class="grid-c" /> -->
-    <div class="grid-left" />
+    <ProjectTree class="grid-left" :project="project" />
     <div class="grid-a" />
     <div class="grid-b" />
-    <div class="grid-c" />
+    <div class="grid-c"><span v-html="project.root.toStringVerbose('', true)"></span></div>
   </div>
 </template>
 
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import Project from '../classes/Project';
+import ProjectTree from './ProjectTree.vue';
 
 export default defineComponent({
-  name: 'HelloWorld',
-  props: {
-    msg: String,
+  name: 'IGS',
+  components: {
+    ProjectTree
   },
+  data: () => ({
+    project: new Project()
+  }),
+  props: {
+  },
+  mounted() {
+    setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).project = this.project;
+    })
+  },
+  watch: {
+    'project': function()  {
+      console.log("Project updated");
+    }
+  }
 });
 </script>
 
