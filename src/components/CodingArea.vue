@@ -63,10 +63,6 @@ export default defineComponent({
     flex-direction: column;
     width: 100%;
     height: 100%;
-    
-    h1 {
-      text-align: center;
-    }
 
     .code {
       padding: 8px;
