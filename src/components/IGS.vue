@@ -4,8 +4,8 @@
     <CodingArea class="grid-a" />
     <Parameters class="grid-b" />
     <PreviewArea class="grid-c" /> -->
-    <ProjectTree class="grid-left" :project="project" />
-    <div class="grid-a" />
+    <ProjectTree class="grid-left" :project="projectState" />
+    <CodingArea class="grid-a" :project="projectState" />
     <div class="grid-b" />
     <div class="grid-c" />
   </div>
@@ -15,28 +15,28 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Project from '../classes/Project';
+import ProjectState from './ProjectState';
 import ProjectTree from './ProjectTree.vue';
+import CodingArea from './CodingArea.vue';
+
+let projectReference: Project = new Project();
 
 export default defineComponent({
   name: 'IGS',
   components: {
-    ProjectTree
+    ProjectTree,
+    CodingArea
   },
   data: () => ({
-    project: new Project()
+    project: projectReference = new Project(),
+    projectState: new ProjectState(projectReference)
   }),
   props: {
   },
   mounted() {
-    setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).project = this.project;
-    })
+    this.projectState.setProject(this.project);
   },
   watch: {
-    'project': function()  {
-      console.log("Project updated");
-    }
   }
 });
 </script>
@@ -48,6 +48,7 @@ export default defineComponent({
   height: 100%;
   display: grid;
   grid-template-areas: "l a c" "l b c";
+  grid-template-columns: 1fr 2fr 2fr; 
 
   div {
     min-width: 100px;

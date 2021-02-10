@@ -1,7 +1,7 @@
 <template>
   <div class="project-tree">
     <div class="tree-content">
-      <TreeFolder :folder="projectTree" :project="projectState" />
+      <TreeFolder :folder="projectTree" :project="project" />
     </div>
   </div>
 </template>
@@ -9,7 +9,6 @@
 
 <script lang="ts">
 import Folder from '@/classes/Folder';
-import Project from '@/classes/Project';
 import TreeFolder from './subcomponents/TreeFolder.vue';
 import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
@@ -20,23 +19,19 @@ export default defineComponent({
     TreeFolder
   },
   data: () => { return {
-    projectState: new ProjectState()
   }},
   computed: {
     projectTree (): Folder {
-      return this.project.root;
+      return this.project.getProject().root;
     }
   },
   props: {
     project: {
-      type: Project,
+      type: ProjectState,
       required: true
     }
   },
   watch: {
-    project: function(v) {
-      this.projectState.setProject(v);
-    }
   }
 });
 </script>

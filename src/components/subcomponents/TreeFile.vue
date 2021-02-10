@@ -3,6 +3,7 @@
     <!-- Icon & Name -->
     <span class="icon">&#x1F5CE;</span>
     <span class="name">{{snippet.name}}</span>
+    <span v-if="isDirty">&nbsp;*</span>
   </div>
 </template>
 
@@ -17,7 +18,8 @@ export default defineComponent({
   data: () => { return {
   }},
   computed: {
-    isActive (): boolean { return this.project.getOpenSnippet() === this.snippet; }
+    isActive (): boolean { return this.project.getOpenSnippet() === this.snippet; },
+    isDirty (): boolean { return this.snippet.isDirty(); }
   },
   props: {
     snippet: {
@@ -42,18 +44,17 @@ export default defineComponent({
 <style scoped lang="scss">
 
   .project-tree-file {
-    margin-bottom: 2px;
+    margin: 2px 0px;
     cursor: pointer;
     .icon {
       margin-left: 15px;
       margin-right: 7px;
     }
     &:hover {
-      text-decoration: underline;
-      background-color: #f0f0ff;
+      background-color: #f4f4ff;
     }
     &.highlight {
-      background-color: #d0d0ff;
+      background-color: #dadaff;
     }
   }
 
