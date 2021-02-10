@@ -1,13 +1,9 @@
 <template>
   <div class="igs">
-    <!--
-    <CodingArea class="grid-a" />
-    <Parameters class="grid-b" />
-    <PreviewArea class="grid-c" /> -->
     <ProjectTree class="grid-left" :project="projectState" />
     <CodingArea class="grid-a" :project="projectState" />
     <Parameters class="grid-b" :project="projectState" />
-    <div class="grid-c" />
+    <PreviewArea class="grid-c" :project="projectState" />
   </div>
 </template>
 
@@ -19,6 +15,7 @@ import ProjectState from './ProjectState';
 import ProjectTree from './ProjectTree.vue';
 import CodingArea from './CodingArea.vue';
 import Parameters from './Parameters.vue';
+import PreviewArea from './PreviewArea.vue';
 
 let projectReference: Project = new Project();
 
@@ -27,7 +24,8 @@ export default defineComponent({
   components: {
     ProjectTree,
     CodingArea,
-    Parameters
+    Parameters,
+    PreviewArea
   },
   data: () => ({
     project: projectReference = new Project(),
