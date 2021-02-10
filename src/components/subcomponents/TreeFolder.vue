@@ -1,12 +1,12 @@
 <template>
   <div class="project-tree-folder">
     <!-- Icon & Name -->
-    <button class="collapse">{{collapseLabel}}</button>
+    <button class="collapse" @click="toggleCollapse">{{collapseLabel}}</button>
     <span class="icon">&#x1F4C1;</span>
     <span class="name">{{folder.name}}</span>
-    <div class="folder-content" v-if="folder && folder.children && folder.children.length > 0">
-      <TreeFolder v-for="item in childFolders" :key="item.name" :folder="item" />
-      <TreeFile v-for="item in childFiles" :key="item.name" :snippet="item" />
+    <div class="folder-content" v-if="folder && folder.children && folder.children.length > 0" v-show="!collapsed">
+      <TreeFolder :project="project" v-for="item in childFolders" :key="item.name" :folder="item" />
+      <TreeFile :project="project" v-for="item in childFiles" :key="item.name" :snippet="item" />
     </div>
   </div>
 </template>
@@ -17,6 +17,7 @@ import Folder from '@/classes/Folder';
 import Snippet from '@/classes/Snippet';
 import TreeFile from './TreeFile.vue';
 import { defineComponent } from 'vue';
+import ProjectState from '../ProjectState';
 
 export default defineComponent({
   name: 'TreeFolder',
@@ -37,9 +38,18 @@ export default defineComponent({
       return this.collapsed ? "+" : "-";
     }
   },
+  methods: {
+    toggleCollapse (): void {
+      this.collapsed = !this.collapsed;
+    }
+  },
   props: {
     folder: {
       type: Folder,
+      required: true
+    },
+    project: {
+      type: ProjectState,
       required: true
     }
   },
@@ -56,8 +66,14 @@ export default defineComponent({
     width: 20px;
     height: 20px;
     margin-right: 4px;
-    border: 1px solid #666;
+    border: 1px solid #0000;
+    background-color: #fff0;
     cursor: pointer;
+    opacity: 0.5;
+    &:hover {
+      border: 1px solid #0004;
+      opacity: 1;
+    }
   }
 
   span.icon {

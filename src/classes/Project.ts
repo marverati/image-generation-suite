@@ -2,7 +2,7 @@ import Folder from "./Folder";
 import Snippet from "./Snippet";
 
 export default class Project {
-  public readonly root = new Folder("workspace");
+  public readonly root = new Folder("workspace", this);
 
   constructor() {
     console.log("Created project", this);

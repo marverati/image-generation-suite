@@ -1,6 +1,8 @@
 <template>
   <div class="project-tree">
-    <TreeFolder :folder="projectTree" />
+    <div class="tree-content">
+      <TreeFolder :folder="projectTree" :project="projectState" />
+    </div>
   </div>
 </template>
 
@@ -9,6 +11,7 @@
 import Folder from '@/classes/Folder';
 import Project from '@/classes/Project';
 import TreeFolder from './subcomponents/TreeFolder.vue';
+import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -17,6 +20,7 @@ export default defineComponent({
     TreeFolder
   },
   data: () => { return {
+    projectState: new ProjectState()
   }},
   computed: {
     projectTree (): Folder {
@@ -30,6 +34,9 @@ export default defineComponent({
     }
   },
   watch: {
+    project: function(v) {
+      this.projectState.setProject(v);
+    }
   }
 });
 </script>
@@ -39,7 +46,9 @@ export default defineComponent({
 .project-tree {
   width: 100%;
   height: 100%;
-  padding: 16px;
+  .tree-content {
+    padding: 16px;
+  }
 }
 
 </style>

@@ -1,13 +1,13 @@
 <template>
   <div class="igs">
-    <!-- <ProjectTree class="grid-left" />
+    <!--
     <CodingArea class="grid-a" />
     <Parameters class="grid-b" />
     <PreviewArea class="grid-c" /> -->
     <ProjectTree class="grid-left" :project="project" />
     <div class="grid-a" />
     <div class="grid-b" />
-    <div class="grid-c"><span v-html="project.root.toStringVerbose('', true)"></span></div>
+    <div class="grid-c" />
   </div>
 </template>
 

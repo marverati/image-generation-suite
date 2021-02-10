@@ -3,12 +3,9 @@ import AbstractProjectItem from "./AbstractProjectItem";
 export default class Folder extends AbstractProjectItem {
   public readonly children: AbstractProjectItem[] = [];
 
-  constructor(name: string) {
-    super(name);
-  }
-
   public append(child: AbstractProjectItem, preventSorting = false) {
     this.children.push(child);
+    child.setParent(this);
     if (!preventSorting) {
       this.sort();
     }
