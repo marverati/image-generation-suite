@@ -3,7 +3,8 @@
     <ProjectTree class="grid-left" :project="projectState" />
     <CodingArea class="grid-a" :project="projectState" />
     <Parameters class="grid-b" :project="projectState" />
-    <PreviewArea class="grid-c" :project="projectState" />
+    <PreviewArea class="grid-c" :project="projectState" @openPreview="openPreview()" />
+    <PreviewLayer :open="previewOpen" :project="projectState" @close="closePreview()" />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import ProjectTree from './ProjectTree.vue';
 import CodingArea from './CodingArea.vue';
 import Parameters from './Parameters.vue';
 import PreviewArea from './PreviewArea.vue';
+import PreviewLayer from './PreviewLayer.vue';
 
 let projectReference: Project = new Project();
 
@@ -25,13 +27,23 @@ export default defineComponent({
     ProjectTree,
     CodingArea,
     Parameters,
-    PreviewArea
+    PreviewArea,
+    PreviewLayer
   },
   data: () => ({
     project: projectReference = new Project(),
-    projectState: new ProjectState(projectReference)
+    projectState: new ProjectState(projectReference),
+    previewOpen: false
   }),
   props: {
+  },
+  methods: {
+    openPreview() {
+      this.previewOpen = true;
+    },
+    closePreview() {
+      this.previewOpen = false;
+    }
   },
   mounted() {
     this.projectState.setProject(this.project);

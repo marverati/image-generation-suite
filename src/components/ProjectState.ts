@@ -4,7 +4,7 @@ import Snippet from "@/classes/Snippet";
 export default class ProjectState {
   private project: Project;
   private currentlyOpenSnippet: Snippet | null = null;
-
+  private previewImage: HTMLImageElement | null = null;
 
   public constructor(project: Project = new Project()) {
     this.project = project;
@@ -40,5 +40,14 @@ export default class ProjectState {
 
   public handleError(e: Error): void {
     console.error(e);
+  }
+
+  public setPreviewImage(img: HTMLImageElement) {
+    this.previewImage = img;
+    console.log("Preview: ", img, img.naturalWidth);
+  }
+
+  public getPreviewImage(): HTMLImageElement | null {
+    return this.previewImage;
   }
 }

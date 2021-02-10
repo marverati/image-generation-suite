@@ -3,7 +3,7 @@
       <div class="content">
         <h1>Preview</h1>
         <div class="canvas-space">
-          <canvas ref="previewCanvas" width=512 height=512 />
+          <canvas ref="previewCanvas" width=512 height=512 @click="openPreview()" />
         </div>
       </div>
   </div>
@@ -35,6 +35,14 @@ export default defineComponent({
     }
   },
   methods: {
+    openPreview() {
+      const img = new Image();
+      img.onload = () => {
+        this.project.setPreviewImage(img);
+        this.$emit("openPreview");
+      };
+      img.src = this.canvas.toDataURL();
+    }
   },
   watch: {
     // currentSnippet: function(s: Snippet) {
