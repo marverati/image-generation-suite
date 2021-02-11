@@ -1,0 +1,22 @@
+TODOs:
+[ ] Parameter tutorial
+[ ] General help
+[ ] Exporting project tree to long text
+[ ] Importing project tree from text
+[ ] Exporting project tree as zip
+[ ] Saving project tree to local storage
+[ ] Loading project tree from local storage 
+[ ] Strategy pattern to save in different places
+[ ] Upload project tree to php server
+[ ] Load project tree from php server 
+[ ] More helper functions in imageUtil and ArrayExtension
+[ ] Auto executable user code (special folder?) to easily write own extensions
+[ ] Error handling and display
+[ ] filter and gen showing previews every ~2 seconds
+[ ] disable UI while script is running
+[ ] stats on script runtime
+[ ] saving/restoring parameter snapshots
+[ ] enable additional parameter types
+  [ ] 2D slider
+[ ] render legend on slider parameters
+[ ] parameter randomization button 
