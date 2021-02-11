@@ -28,6 +28,7 @@ export default class ProjectState {
 
   public runCode(): void {
     if (this.currentlyOpenSnippet != null) {
+      this.currentlyOpenSnippet.clearParams();
       const code = this.currentlyOpenSnippet.getCode();
       try {
         const func = new Function(code);

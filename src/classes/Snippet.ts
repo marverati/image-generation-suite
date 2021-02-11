@@ -4,6 +4,7 @@ import AbstractProjectItem from "./AbstractProjectItem";
 
 export type SnippetParameter = {
   label: string;
+  type: string;
   value: any;
   inUse: boolean;
   object: Record<string, any>;
@@ -46,13 +47,15 @@ export default class Snippet extends AbstractProjectItem {
         p.inUse = false;
       }
     }
+    this.informParamListeners();
   }
 
-  public getParam(label: string, initialValue: any, properties: Record<string, any>): SnippetParameter {
+  public getParam(label: string, type: string, initialValue: any, properties: Record<string, any>): SnippetParameter {
     let param = this.params.find(p => p.label === label);
     if (!param) {
       param = {
         label,
+        type,
         value: initialValue,
         object: properties,
         inUse: true
@@ -60,11 +63,14 @@ export default class Snippet extends AbstractProjectItem {
       this.params.push(param);
       this.informParamListeners();
     } else {
+      const wasInUse = param.inUse;
       param.inUse = true;
       // Update parameter properties (e.g. min, max, ...)
       if (shallowObjectsDiffer(param.object, properties)) {
         param.object = properties;
         param.value = initialValue;
+        this.informParamListeners();
+      } else if (!wasInUse) {
         this.informParamListeners();
       }
     }

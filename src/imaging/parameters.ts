@@ -26,8 +26,7 @@ export function _param(label: string, initialValue: number, minOrMax: number, ma
     max = minOrMax;
     min = 0;
   }
-  const object = snippet.getParam(label, initialValue, { min, max });
-  console.log("interpreted to ", object);
+  const object = snippet.getParam(label, "range", initialValue, { min, max });
   return object.value;
 }
 

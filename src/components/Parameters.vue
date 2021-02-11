@@ -2,10 +2,20 @@
   <div class="parameters">
       <div class="content" v-if="currentSnippet != null">
         <h1>Parameters</h1>
+        <!-- Refreshing -->
+        <label>Auto refresh:</label>
+        <input type="checkbox" v-model="autoRefresh" :disabled="params.length <= 0" />
+        <button :disabled="autoRefresh" @click="refresh()">&#128472;</button>
+        <!-- <br />
+        <span>{{Math.random()}}</span><br /> -->
         <div class="parameter" v-for="param in params" :key="param.label">
-          <label>{{param.label}}</label>
+          <label>{{param.label}}:</label>
           <!-- Num Slider -->
+          <input v-if="param.type == 'range'" :min="param.object.min" :max="param.object.max"
+              :step="param.object.step" type="range" v-model="param.value" @change="refresh()" />
           <!-- Num Input -->
+          <input v-if="param.type == 'number'" :min="param.object.min" :max="param.object.max"
+              :step="param.object.step" v-model="param.value" />
           <!-- Checkbox -->
           <!-- Enum -->
           <!-- String Input -->
@@ -30,7 +40,8 @@ export default defineComponent({
   components: {
   },
   data: () => { return {
-    params: emptyParams
+    params: emptyParams,
+    autoRefresh: true
   }},
   computed: {
     currentSnippet(): Snippet | null {
@@ -51,6 +62,9 @@ export default defineComponent({
       }
       this.params = this.currentSnippet.getParams();
       console.log("Parameters now: ", this.params.map(p => p.label + " - " + p.value));
+    },
+    refresh() {
+      this.project.runCode();
     }
   },
   watch: {
@@ -73,6 +87,23 @@ export default defineComponent({
 <style scoped lang="scss">
 
   .parameters {
+
+    label {
+      display: inline-block;
+      width: 140px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      text-align: right;
+      margin-right: 16px;
+      margin-left: 8px;
+    }
+
+    button {
+      margin-left: 48px;
+      margin-bottom: 16px;
+      position: relative;
+      top: -4px;
+    }
 
     .parameter {
       display: block;
