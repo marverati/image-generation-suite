@@ -1,6 +1,7 @@
 <template>
-  <div class="preview-layer" v-if="open" @click="close()">
-    <img v-if="image != null" :src="image.src" />
+  <div class="preview-layer" v-if="open" @click="close()" :class="hidden ? 'hidden' : ''"
+      @keydown="handleKey">
+    <img ref="img" v-if="image != null" :src="image.src" tabindex=1 />
   </div>
 </template>
 
@@ -17,6 +18,9 @@ export default defineComponent({
       required: true
     }
   },
+  data: () => ({
+    hidden: true
+  }),
   computed: {
     image (): HTMLImageElement | null {
       console.log("receiving new preview image");
@@ -25,7 +29,26 @@ export default defineComponent({
   },
   methods: {
     close() {
-      this.$emit("close");
+      this.hidden = true;
+      setTimeout(() => {
+        this.$emit("close");
+      }, 500);
+    },
+    handleKey(e: KeyboardEvent) {
+      if (e.code == "Escape") {
+        this.close();
+      }
+    }
+  },
+  watch: {
+    open: function(v) {
+      this.hidden = true;
+      if (v) {
+        setTimeout(() => {
+          this.hidden = false;
+          (this.$refs.img as HTMLImageElement)?.focus();
+        }, 50);
+      }
     }
   }
 })
@@ -39,8 +62,13 @@ export default defineComponent({
   position: fixed;
   left: 0;
   top: 0;
-  background-color: #0006;
+  background-color: #000c;
   backdrop-filter: blur(4px);
+  transition: opacity 0.5s ease;
+  opacity: 1;
+  &.hidden {
+    opacity: 0;
+  }
 
   display: flex;
   justify-content: center;
