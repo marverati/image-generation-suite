@@ -16,7 +16,7 @@ export default class Project {
     this.root.append(snip2);
     this.root.append(folder);
     snip3.setCode(`setSize(512);
-const red = _param(0, 255);
+const red = _param('Red', 0, 0, 255);
 gen((x, y) => x & y)
 filter(c => [red, 255 - c[1], c[2], 255])`)
   }

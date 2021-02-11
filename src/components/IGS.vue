@@ -61,6 +61,7 @@ export default defineComponent({
   display: grid;
   grid-template-areas: "l a c" "l b c";
   grid-template-columns: 1fr 2fr 2fr; 
+  grid-template-rows: 2fr 1fr;
 
   h1 {
     text-align: center;

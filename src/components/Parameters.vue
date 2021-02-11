@@ -2,7 +2,14 @@
   <div class="parameters">
       <div class="content" v-if="currentSnippet != null">
         <h1>Parameters</h1>
-        <!-- TODO -->
+        <div class="parameter" v-for="param in params" :key="param.label">
+          <label>{{param.label}}</label>
+          <!-- Num Slider -->
+          <!-- Num Input -->
+          <!-- Checkbox -->
+          <!-- Enum -->
+          <!-- String Input -->
+        </div>
       </div>
   </div>
 </template>
@@ -64,5 +71,13 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+
+  .parameters {
+
+    .parameter {
+      display: block;
+    }
+
+  }
 
 </style>
