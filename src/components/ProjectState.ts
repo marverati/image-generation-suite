@@ -44,7 +44,6 @@ export default class ProjectState {
 
   public setPreviewImage(img: HTMLImageElement) {
     this.previewImage = img;
-    console.log("Preview: ", img, img.naturalWidth);
   }
 
   public getPreviewImage(): HTMLImageElement | null {
