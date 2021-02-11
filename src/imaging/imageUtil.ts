@@ -98,8 +98,12 @@ export function filter(filterFunc: Filter): void {
 }
 
 export function fill(c: CssColor | number): void {
+  currentContext.save();
+  currentContext.globalCompositeOperation = "copy";
   currentContext.fillStyle = (c instanceof Array ? c.toRGBA() : (c === +c) ? [c, c, c].toRGBA() : c) as string;
-  currentContext.fillRect(0, 0, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+  currentContext.fillRect(-Number.MAX_SAFE_INTEGER / 2, -Number.MAX_SAFE_INTEGER / 2,
+      Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+  currentContext.restore();
 }
 
 export function clear(): void {

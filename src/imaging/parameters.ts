@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ProjectState from "@/components/ProjectState";
-import { exposeToWindow } from "@/util";
+import { cleanObject, exposeToWindow } from "@/util";
 
 let project: ProjectState | null = null;
 
@@ -16,7 +16,7 @@ export function getProject(): ProjectState {
   return project;
 }
 
-export function _param(label: string, initialValue: number, minOrMax: number, max?: number): number {
+export function _param(label: string, initialValue: number, minOrMax: number, max?: number, step?: number): number {
   const snippet = getProject().getOpenSnippet();
   if (!snippet) {
     return initialValue;
@@ -26,7 +26,7 @@ export function _param(label: string, initialValue: number, minOrMax: number, ma
     max = minOrMax;
     min = 0;
   }
-  const object = snippet.getParam(label, "range", initialValue, { min, max });
+  const object = snippet.getParam(label, "range", initialValue, cleanObject({ min, max, step }));
   return object.value;
 }
 

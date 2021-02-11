@@ -8,15 +8,27 @@ Milestone 1: Useful & fun
   [X] Importing project tree from text
   [X] Saving project tree to local storage
   [X] Loading project tree from local storage
-  [ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere (40 min)
-  [ ] Strategy pattern to save in different places (45 min)
+  [ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere (40m)
+  [ ] Strategy pattern to save in different places (45m)
   [ ] Create simple save/load PHP server (2h)
   [ ] Upload project tree to PHP server for single user (1h)
-  [ ] Load project tree from PHP server (30 min)
-  [ ] Allow user to manually export/import (without localstorage) (30 min)
-[ ] More helper functions in imageUtil and ArrayExtension (2h)
+  [ ] Load project tree from PHP server (30m)
+  [ ] Allow user to manually export/import (without localstorage) (30m)
+[ ] More helper functions in imageUtil and ArrayExtension
+  [ ] Resize, rescale, scaleBelow (30m)
+  [ ] Value mapping (15m)
+  [ ] Coordinate system transformations (1h)
+  [ ] HSL conversion (30m)
+  [ ] Array affect methods (20m)
+[ ] Importing user pictures via drag&drop or button in preview (30m)
 
 Milestone 2: Usability
+[ ] Rename folders / snippets 
+[ ] Delete folders / snippets
+[ ] Moving folders / snippets
+[ ] Render (fast) snippets immediately
+[ ] Asynchronous non-blocking running / rendering?
+[ ] Progress bar
 [ ] General help
 [ ] Parameter tutorial
 [ ] enable additional parameter types
@@ -32,9 +44,11 @@ Milestone 2: Usability
 [ ] filter and gen showing previews every ~2 seconds when running too long
 
 Milestone 3: Additional features
+[ ] importing / running other snippets
 [ ] stats on script runtime
 [ ] saving/restoring favorite parameter snapshots for a code snippet
 [ ] Seed randomization
+[ ] Keyboard shortcuts
 [ ] Exporting project tree as zip
 [ ] Code snippet versions
 [ ] Auto executable user code (special folder?) to easily write own extensions

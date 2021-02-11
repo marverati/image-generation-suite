@@ -6,8 +6,6 @@
         <label>Auto refresh:</label>
         <input type="checkbox" v-model="autoRefresh" :disabled="params.length <= 0" />
         <button :disabled="autoRefresh" @click="refresh()">&#128472;</button>
-        <!-- <br />
-        <span>{{Math.random()}}</span><br /> -->
         <div class="parameter" v-for="param in params" :key="param.label">
           <label>{{param.label}}:</label>
           <!-- Num Slider -->
