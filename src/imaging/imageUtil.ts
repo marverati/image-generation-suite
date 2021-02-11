@@ -3,6 +3,16 @@
 import { exposeToWindow } from '@/util';
 import './ArrayExtension';
 
+declare global {
+  interface HTMLCanvasElement {
+    use(): void;
+  }
+}
+
+HTMLCanvasElement.prototype.use = function() {
+  useCanvas(this);
+}
+
 let currentCanvas: HTMLCanvasElement = document.createElement("canvas");
 let currentContext: CanvasRenderingContext2D = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -16,7 +26,24 @@ export type Generator = (x: number, y: number) => Color;
 export function useCanvas(canvas: HTMLCanvasElement) {
   currentCanvas = canvas;
   currentContext = canvas.getContext("2d") as CanvasRenderingContext2D;
+  return canvas;
 } 
+
+export function createCanvas(w = currentCanvas.width, h = w): HTMLCanvasElement {
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  return c;
+}
+
+export function cloneCanvas(canvas = currentCanvas): HTMLCanvasElement {
+  const c = document.createElement("canvas");
+  c.width = canvas.width;
+  c.height = canvas.height;
+  const ctx = c.getContext("2d");
+  ctx?.drawImage(canvas, 0, 0);
+  return c;
+}
 
 export function getCanvas(): HTMLCanvasElement {
   return currentCanvas;
