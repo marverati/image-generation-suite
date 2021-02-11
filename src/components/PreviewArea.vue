@@ -21,19 +21,19 @@
 import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
 
+const dummyCanvas = document.createElement("canvas");
+
 export default defineComponent({
   name: 'PreviewArea',
   components: {
   },
   data: () => { return {
-    showBackground: true
+    showBackground: true,
+    canvas: dummyCanvas
   }},
   computed: {
-    canvas (): HTMLCanvasElement {
-      return this.$refs.previewCanvas as HTMLCanvasElement;
-    },
     context (): CanvasRenderingContext2D {
-      return this.canvas.getContext("2d") as CanvasRenderingContext2D;
+      return this.canvas?.getContext("2d") as CanvasRenderingContext2D;
     },
     toggleBackgroundLabel (): string {
       return this.showBackground ? "Hide Alpha Background" : "Show Alpha Background";
@@ -59,10 +59,17 @@ export default defineComponent({
     }
   },
   watch: {
-    // currentSnippet: function(s: Snippet) {
-    // },
-    // currentCode: function(code) {
-    // }
+    canvas: function(c) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).canvas = c;
+    },
+    context: function(c) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).context = c;
+    }
+  },
+  mounted () {
+    this.canvas = this.$refs.previewCanvas as HTMLCanvasElement;
   }
 });
 </script>
