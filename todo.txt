@@ -1,6 +1,22 @@
 TODOs:
+
+Milestone 1: Useful & fun
 [X] Creating new code snippets
 [X] Creating new folders
+[ ] Load / Save / Import / Export
+  [X] Exporting project tree to JSON string
+  [X] Importing project tree from text
+  [X] Saving project tree to local storage
+  [X] Loading project tree from local storage
+  [ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere (40 min)
+  [ ] Strategy pattern to save in different places (45 min)
+  [ ] Create simple save/load PHP server (2h)
+  [ ] Upload project tree to PHP server for single user (1h)
+  [ ] Load project tree from PHP server (30 min)
+  [ ] Allow user to manually export/import (without localstorage) (30 min)
+[ ] More helper functions in imageUtil and ArrayExtension (2h)
+
+Milestone 2: Usability
 [ ] General help
 [ ] Parameter tutorial
 [ ] enable additional parameter types
@@ -11,23 +27,14 @@ TODOs:
   [ ] 2D slider
 [ ] render legend on slider parameters (min, max, ...)
 [ ] parameter randomization button 
-[ ] Load / Save / Import / Export
-  [X] Exporting project tree to JSON string
-  [X] Importing project tree from text
-  [ ] Exporting project tree as zip
-  [ ] Allow user to manually export/import (without localstorage)
-  [X] Saving project tree to local storage
-  [X] Loading project tree from local storage
-  [ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere
-  [ ] Strategy pattern to save in different places
-  [ ] Upload project tree to php server
-  [ ] Load project tree from php server 
-[ ] More helper functions in imageUtil and ArrayExtension
 [ ] Error handling and display
 [ ] disable UI while script is running
 [ ] filter and gen showing previews every ~2 seconds when running too long
-[ ] Auto executable user code (special folder?) to easily write own extensions
+
+Milestone 3: Additional features
 [ ] stats on script runtime
-[ ] saving/restoring favorit parameter snapshots for a code snippet
+[ ] saving/restoring favorite parameter snapshots for a code snippet
 [ ] Seed randomization
+[ ] Exporting project tree as zip
 [ ] Code snippet versions
+[ ] Auto executable user code (special folder?) to easily write own extensions
