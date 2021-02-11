@@ -24,11 +24,25 @@ export default class Snippet extends AbstractProjectItem {
   private params: SnippetParameter[] = [];
   private paramListeners: Listener[] = [];
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public toJSON(): Object {
+    return {
+      name: this.name,
+      type: "code",
+      code: this.savedCode
+    };
+  }
+
   public setCode(code: string): void {
     if (code !== this.code) {
       this.code = code;
       this.dirty = (this.code !== this.savedCode);
     }
+  }
+
+  public save(): void {
+    this.savedCode = this.code;
+    this.dirty = false;
   }
 
   public getCode(): string {

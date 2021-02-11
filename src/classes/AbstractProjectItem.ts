@@ -10,6 +10,9 @@ export default abstract class AbstractProjectItem {
     this.project = project;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public abstract toJSON(): Object;
+
   public toStringVerbose(indent = "", forHtml?: boolean): string {
     if (forHtml == !forHtml) {
       return "[nasty linter made me do this]";

@@ -1,3 +1,4 @@
+import AbstractProjectItem from "./AbstractProjectItem";
 import Folder from "./Folder";
 import Snippet from "./Snippet";
 
@@ -19,6 +20,27 @@ export default class Project {
 const red = _param('Red', 0, 0, 255);
 gen((x, y) => x & y)
 filter(c => [red, 255 - c[1], c[2], 255])`)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public toJSON(): Object {
+    return {
+      version: 1,
+      type: "project",
+      tree: this.root.toJSON()
+    };
+  }
+
+  public getAllSnippets(): Snippet[] {
+    return this.getAllTreeItems().filter(item => item instanceof Snippet) as Snippet[];
+  }
+
+  public getAllFolders(): Folder[] {
+    return this.getAllTreeItems().filter(item => item instanceof Folder) as Folder[];
+  }
+
+  public getAllTreeItems(): AbstractProjectItem[] {
+    return this.root.getAllDescendants();
   }
 
 }

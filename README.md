@@ -9,6 +9,8 @@ npm install
 ```
 npm run serve
 ```
+Note: Runs on port 8090 to avoid conflicts in local storage use with other local applications. Much storage space may
+be used depending on project saving behavior and amount of stored generator code.
 
 ### Compiles and minifies for production
 ```

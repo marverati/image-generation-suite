@@ -11,6 +11,15 @@ export default class Folder extends AbstractProjectItem {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public toJSON(): Object {
+    return {
+      name: this.name,
+      type: "folder",
+      children:  this.children.map(child => child.toJSON())
+    };
+  }
+
   /** Sort folder content alphabetically, and folders to top */
   public sort(): void {
     this.children.sort(Folder.compareItems);
@@ -29,5 +38,15 @@ export default class Folder extends AbstractProjectItem {
     const separator = forHtml ? "<br>" : "\n"; 
     const childIndent = indent + (forHtml ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "    ");
     return indent + this.name + this.children.map(c => separator + c.toStringVerbose(childIndent, forHtml)).join('');
+  }
+
+  public getAllDescendants(result: AbstractProjectItem[] = []): AbstractProjectItem[] {
+    for (const c of this.children) {
+      result.push(c);
+      if (c instanceof Folder) {
+        c.getAllDescendants(result);
+      }
+    }
+    return result;
   }
 }

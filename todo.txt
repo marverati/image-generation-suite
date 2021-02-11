@@ -1,10 +1,10 @@
 TODOs:
 [ ] Parameter tutorial
 [ ] General help
-[ ] Exporting project tree to long text
+[X] Exporting project tree to JSON string
 [ ] Importing project tree from text
 [ ] Exporting project tree as zip
-[ ] Saving project tree to local storage
+[X] Saving project tree to local storage
 [ ] Loading project tree from local storage 
 [ ] Strategy pattern to save in different places
 [ ] Upload project tree to php server
@@ -17,6 +17,10 @@ TODOs:
 [ ] stats on script runtime
 [ ] saving/restoring parameter snapshots
 [ ] enable additional parameter types
+  [ ] Checkbox
+  [ ] Number Input
+  [ ] String Input
+  [ ] Enum
   [ ] 2D slider
-[ ] render legend on slider parameters
+[ ] render legend on slider parameters (min, max, ...)
 [ ] parameter randomization button 
