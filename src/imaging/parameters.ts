@@ -5,6 +5,7 @@ import { exposeToWindow } from "@/util";
 let project: ProjectState | null = null;
 
 export function useProject(p: ProjectState): void {
+  console.log("Using project: ", p);
   project = p;
 }
 
@@ -26,6 +27,7 @@ export function _param(label: string, initialValue: number, minOrMax: number, ma
     min = 0;
   }
   const object = snippet.getParam(label, initialValue, { min, max });
+  console.log("interpreted to ", object);
   return object.value;
 }
 

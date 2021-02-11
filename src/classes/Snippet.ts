@@ -9,12 +9,19 @@ export type SnippetParameter = {
   object: Record<string, any>;
 }
 
+type Listener = {
+  method: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  context: Object | null;
+};
+
 export default class Snippet extends AbstractProjectItem {
   private code = "";
   private savedCode = "";
   private dirty = false;
 
   private params: SnippetParameter[] = [];
+  private paramListeners: Listener[] = [];
 
   public setCode(code: string): void {
     if (code !== this.code) {
@@ -51,12 +58,14 @@ export default class Snippet extends AbstractProjectItem {
         inUse: true
       };
       this.params.push(param);
+      this.informParamListeners();
     } else {
       param.inUse = true;
       // Update parameter properties (e.g. min, max, ...)
       if (shallowObjectsDiffer(param.object, properties)) {
         param.object = properties;
         param.value = initialValue;
+        this.informParamListeners();
       }
     }
     return param;
@@ -68,5 +77,32 @@ export default class Snippet extends AbstractProjectItem {
     } else {
       return this.params.filter(p => p.inUse);
     }
+  }
+
+  private informParamListeners(): void {
+    console.log("informing listeners of ", this.params.length);
+    this.paramListeners.forEach(l => l.method.call(l.context));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public subscribeToParameterChanges(method: Function, context: Object | null = null): boolean {
+    if (!this.paramListeners.find(p => p.method === method && p.context === context)) {
+      this.paramListeners.push({
+        method,
+        context
+      });
+      return true;
+    }
+    return false;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public ubsubscribeFromParameterChanges(method: Function, context: Object | null = null): boolean {
+    const i = this.paramListeners.findIndex(p => p.method === method && p.context === context);
+    if (i >= 0) {
+      this.paramListeners.splice(i, 1);
+      return true;
+    }
+    return false;
   }
 }
