@@ -1,14 +1,18 @@
 <template>
   <div class="project-tree">
-    <div class="tree-content">
-      <TreeFolder :folder="projectTree" :project="project" />
+    <div class="tree-toolbar">
+      <span class="save-button" @click="save()">Save</span>
     </div>
-    <span class="save-button" @click="save()">Save</span>
+    <div class="tree-content">
+      <TreeFolder :folder="projectTree" :project="project" @openSnippet="openSnippet"/>
+    </div>
   </div>
 </template>
 
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 import Folder from '@/classes/Folder';
 import TreeFolder from './subcomponents/TreeFolder.vue';
 import ProjectState from './ProjectState';
@@ -29,6 +33,14 @@ export default defineComponent({
     }
   },
   methods: {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    openSnippet(payload: Object): void {
+      console.log("Opening using ", payload);
+      const snippet = (payload as any).snippet;
+      if (snippet) {
+        this.project.openSnippet(snippet);
+      }
+    },
     save() {
       console.log("Saving project...");
       try {
@@ -93,6 +105,7 @@ export default defineComponent({
   height: 100%;
   .tree-content {
     padding: 16px;
+    padding-top: 32px;
   }
 
   .save-button {

@@ -1,22 +1,8 @@
 TODOs:
-[ ] Parameter tutorial
+[X] Creating new code snippets
+[X] Creating new folders
 [ ] General help
-[X] Exporting project tree to JSON string
-[X] Importing project tree from text
-[ ] Exporting project tree as zip
-[X] Saving project tree to local storage
-[X] Loading project tree from local storage
-[ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere
-[ ] Strategy pattern to save in different places
-[ ] Upload project tree to php server
-[ ] Load project tree from php server 
-[ ] More helper functions in imageUtil and ArrayExtension
-[ ] Auto executable user code (special folder?) to easily write own extensions
-[ ] Error handling and display
-[ ] filter and gen showing previews every ~2 seconds
-[ ] disable UI while script is running
-[ ] stats on script runtime
-[ ] saving/restoring parameter snapshots
+[ ] Parameter tutorial
 [ ] enable additional parameter types
   [ ] Checkbox
   [ ] Number Input
@@ -25,3 +11,23 @@ TODOs:
   [ ] 2D slider
 [ ] render legend on slider parameters (min, max, ...)
 [ ] parameter randomization button 
+[ ] Load / Save / Import / Export
+  [X] Exporting project tree to JSON string
+  [X] Importing project tree from text
+  [ ] Exporting project tree as zip
+  [ ] Allow user to manually export/import (without localstorage)
+  [X] Saving project tree to local storage
+  [X] Loading project tree from local storage
+  [ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere
+  [ ] Strategy pattern to save in different places
+  [ ] Upload project tree to php server
+  [ ] Load project tree from php server 
+[ ] More helper functions in imageUtil and ArrayExtension
+[ ] Error handling and display
+[ ] disable UI while script is running
+[ ] filter and gen showing previews every ~2 seconds when running too long
+[ ] Auto executable user code (special folder?) to easily write own extensions
+[ ] stats on script runtime
+[ ] saving/restoring favorit parameter snapshots for a code snippet
+[ ] Seed randomization
+[ ] Code snippet versions

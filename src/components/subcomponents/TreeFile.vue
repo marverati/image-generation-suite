@@ -44,7 +44,7 @@ export default defineComponent({
 <style scoped lang="scss">
 
   .project-tree-file {
-    margin: 2px 0px;
+    margin: 2px 0px 2px 12px;
     cursor: pointer;
     .icon {
       margin-left: 15px;

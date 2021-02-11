@@ -4,7 +4,7 @@ import { SnippetJSON } from "./Snippet";
 
 export default abstract class AbstractProjectItem {
   public name: string;
-  private parent: AbstractProjectItem | null = null;
+  protected parent: AbstractProjectItem | null = null;
   private project: Project | null;
 
   constructor(name: string, project: Project | null = null) {
@@ -30,5 +30,9 @@ export default abstract class AbstractProjectItem {
 
   public getProject(): Project | null {
     return this.project;
+  }
+
+  public getPath(): string {
+    return this.name;
   }
 }

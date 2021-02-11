@@ -45,6 +45,15 @@ export default class Folder extends AbstractProjectItem {
     return folder;
   }
 
+  public hasChild(name: string, caseSensitive = false): boolean {
+    if (!caseSensitive) { name = name.toLowerCase(); }
+    const nameIsEqual = caseSensitive
+        ? (a: string) => a === name
+        : (a: string) => a.toLowerCase() === name;
+    return this.children.some(c => nameIsEqual(c.name));
+    return false;
+  }
+
   /** Sort folder content alphabetically, and folders to top */
   public sort(): void {
     this.children.sort(Folder.compareItems);
@@ -73,5 +82,9 @@ export default class Folder extends AbstractProjectItem {
       }
     }
     return result;
+  }
+
+  public getPath(): string {
+    return (this.parent ? this.parent.getPath() + " > " : "") + this.name;
   }
 }
