@@ -13,6 +13,8 @@ import Folder from '@/classes/Folder';
 import TreeFolder from './subcomponents/TreeFolder.vue';
 import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
+import Project from '@/classes/Project';
+import { exposeToWindow } from '@/util';
 
 export default defineComponent({
   name: 'ProjectTree',
@@ -28,7 +30,7 @@ export default defineComponent({
   },
   methods: {
     save() {
-      console.log("Saving...");
+      console.log("Saving project...");
       try {
         // First save all snippets
         this.project.getProject().getAllSnippets().forEach(s => s.save());
@@ -41,12 +43,36 @@ export default defineComponent({
         // Save
         const slotKey = "project" + id;
         localStorage.setItem(slotKey, json);
-        console.info("Saved successfully");
+        console.info("Saved successfully to slot " + slotKey);
       } catch(e) {
         console.error("Something went wrong, saving failed!");
         console.error(e);
       }
+    },
+    load(slotNum?: number) {
+      try {
+        if (slotNum == null) {
+          slotNum = +(localStorage.getItem("slot") ?? 0);
+        }
+        const slotKey = "project" + slotNum;
+        const json = localStorage.getItem(slotKey);
+        if (!json) {
+          throw new Error("Stored JSON for key '" + slotKey + "' not found!");
+        }
+        const obj = JSON.parse(json);
+        console.log("Loaded ", obj);
+        const project = Project.fromJSON(obj);
+        console.log("Created ", project);
+        this.$emit("switchProject", project);
+      } catch(e) {
+        console.error("Something went wrong, loading failed!");
+        console.error(e);
+      }
     }
+  },
+  mounted () {
+    exposeToWindow({ loadFromLocalStorage: this.load.bind(this) });
+    this.load();
   },
   props: {
     project: {

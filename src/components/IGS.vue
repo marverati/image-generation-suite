@@ -1,6 +1,6 @@
 <template>
   <div class="igs">
-    <ProjectTree class="grid-left" :project="projectState" />
+    <ProjectTree class="grid-left" :project="projectState" @switchProject="switchProject" />
     <CodingArea class="grid-a" :project="projectState" />
     <Parameters class="grid-b" :project="projectState" />
     <PreviewArea class="grid-c" :project="projectState" @openPreview="openPreview()" />
@@ -43,6 +43,13 @@ export default defineComponent({
     },
     closePreview() {
       this.previewOpen = false;
+    },
+    switchProject(project: Project) {
+      this.project = project;
+      this.projectState.setProject(project);
+      const state = this.projectState;
+      this.projectState = (null as unknown as ProjectState);
+      this.projectState = state;
     }
   },
   mounted() {

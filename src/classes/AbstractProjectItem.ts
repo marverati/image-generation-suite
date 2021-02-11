@@ -1,4 +1,6 @@
+import { FolderJSON } from "./Folder";
 import Project from "./Project";
+import { SnippetJSON } from "./Snippet";
 
 export default abstract class AbstractProjectItem {
   public name: string;
@@ -11,7 +13,7 @@ export default abstract class AbstractProjectItem {
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public abstract toJSON(): Object;
+  public abstract toJSON(): SnippetJSON | FolderJSON;
 
   public toStringVerbose(indent = "", forHtml?: boolean): string {
     if (forHtml == !forHtml) {

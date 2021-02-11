@@ -2,10 +2,11 @@ TODOs:
 [ ] Parameter tutorial
 [ ] General help
 [X] Exporting project tree to JSON string
-[ ] Importing project tree from text
+[X] Importing project tree from text
 [ ] Exporting project tree as zip
 [X] Saving project tree to local storage
-[ ] Loading project tree from local storage 
+[X] Loading project tree from local storage
+[ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere
 [ ] Strategy pattern to save in different places
 [ ] Upload project tree to php server
 [ ] Load project tree from php server 

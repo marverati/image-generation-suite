@@ -10,6 +10,12 @@ export type SnippetParameter = {
   object: Record<string, any>;
 }
 
+export type SnippetJSON = {
+  name: string;
+  type: "code";
+  code: string;
+}
+
 type Listener = {
   method: Function;
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -25,12 +31,26 @@ export default class Snippet extends AbstractProjectItem {
   private paramListeners: Listener[] = [];
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  public toJSON(): Object {
+  public toJSON(): SnippetJSON {
     return {
       name: this.name,
       type: "code",
       code: this.savedCode
     };
+  }
+
+  public static fromJSON(json: SnippetJSON, version = 0): Snippet {
+    if (json.type !== "code") {
+      throw new Error("Tried to create Code Snippet of invalid type: " + json.type + " and name: " + json.name);
+    }
+    if (version < 0) {
+      throw new Error("Invalid version: " + version);
+    }
+    const s = new Snippet(json.name)
+    s.setCode(json.code);
+    s.savedCode = s.code;
+    s.dirty = false;
+    return s;
   }
 
   public setCode(code: string): void {

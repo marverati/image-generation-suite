@@ -1,4 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AbstractProjectItem from "./AbstractProjectItem";
+import Snippet, { SnippetJSON } from "./Snippet";
+
+export type FolderJSON = {
+  name: string;
+  type: "folder";
+  children: (FolderJSON | SnippetJSON)[];
+}
 
 export default class Folder extends AbstractProjectItem {
   public readonly children: AbstractProjectItem[] = [];
@@ -11,13 +19,30 @@ export default class Folder extends AbstractProjectItem {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public toJSON(): Object {
+  public toJSON(): FolderJSON {
     return {
       name: this.name,
       type: "folder",
       children:  this.children.map(child => child.toJSON())
     };
+  }
+
+  public static fromJSON(json: FolderJSON, version = 0): Folder {
+    if (json.type !== "folder") {
+      throw new Error("Tried to create folder from invalid JSON of type: " + json.type + " and name: " + json.name);
+    }
+    const folder = new Folder(json.name);
+    for (const c of json.children) {
+      if (c.type === "folder") {
+        folder.append(Folder.fromJSON(c, version));
+      } else if (c.type === "code") {
+        folder.append(Snippet.fromJSON(c, version));
+      } else {
+        throw new Error("Tried to append invalid element to folder, of type: " + (c as any).type
+            + " and name: " + (c as any).name);
+      }
+    }
+    return folder;
   }
 
   /** Sort folder content alphabetically, and folders to top */
