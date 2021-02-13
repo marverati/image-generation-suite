@@ -38,7 +38,6 @@ export default defineComponent({
   methods: {
     // eslint-disable-next-line @typescript-eslint/ban-types
     openSnippet(payload: Object): void {
-      console.log("Opening using ", payload);
       const snippet = (payload as any).snippet;
       if (snippet) {
         this.project.openSnippet(snippet);
@@ -103,7 +102,6 @@ export default defineComponent({
       }
       const obj = JSON.parse(json);
       const project = Project.fromJSON(obj);
-      console.log("Created ", project);
       this.$emit("switchProject", project);
     },
     handleFileDrop(event: DragEvent): void {
@@ -120,7 +118,7 @@ export default defineComponent({
             reader.onload = (e) => {
               try {
                 this.loadJSON(e.target?.result as string);
-                alert("Project imported");
+                this.$nextTick(() => alert("Project imported"));
               } catch (e) {
                 alert("Something went wrong during import. See console for details.");
                 console.error(e);

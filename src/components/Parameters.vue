@@ -54,12 +54,10 @@ export default defineComponent({
   },
   methods: {
     updateParameters() {
-      console.log("updating parameters!");
       if (!this.currentSnippet) {
         return;
       }
       this.params = this.currentSnippet.getParams();
-      console.log("Parameters now: ", this.params.map(p => p.label + " - " + p.value));
     },
     refresh() {
       this.project.runCode();

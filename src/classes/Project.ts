@@ -13,7 +13,6 @@ export default class Project {
   public readonly root: Folder;
 
   constructor(root?: Folder) {
-    console.log("Created project", this);
     if (root) {
       this.root = root;
     } else {

@@ -120,7 +120,6 @@ export default class Snippet extends AbstractProjectItem {
   }
 
   private informParamListeners(): void {
-    console.log("informing listeners of ", this.params.length);
     this.paramListeners.forEach(l => l.method.call(l.context));
   }
 

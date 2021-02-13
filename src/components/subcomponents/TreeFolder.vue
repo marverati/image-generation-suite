@@ -74,9 +74,7 @@ export default defineComponent({
         } else {
           const snippet = new Snippet(name, this.folder.getProject());
           this.folder.append(snippet);
-          console.log(1);
           this.$emit("openSnippet", { snippet });
-          console.log(2);
         }
       }
     }

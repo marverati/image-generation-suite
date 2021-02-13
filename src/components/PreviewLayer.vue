@@ -23,7 +23,6 @@ export default defineComponent({
   }),
   computed: {
     image (): HTMLImageElement | null {
-      console.log("receiving new preview image");
       return this.project.getPreviewImage();
     }
   },
