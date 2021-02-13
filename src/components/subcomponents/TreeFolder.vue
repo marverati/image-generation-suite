@@ -133,16 +133,17 @@ export default defineComponent({
       &.new-folder, &.new-snippet {
         position: absolute;
         display: inline-block;
-        border: 1px solid #ccc;
+        border: 1px solid #ccc0;
         cursor: pointer;
         opacity: 0;
         transition: opacity 0.2s ease;
         &:hover {
+          border-color: #ccc;
           background-color: #ddf;
         }
       }
       &.new-folder {
-        right: 28px;
+        right: 30px;
       }
       &.new-snippet {
         right: 0px;

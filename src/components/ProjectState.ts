@@ -31,8 +31,9 @@ export default class ProjectState {
       this.currentlyOpenSnippet.clearParams();
       const code = this.currentlyOpenSnippet.getCode();
       try {
-        const func = new Function(code);
-        func();
+        const canvas = (window as any).previewCanvas as HTMLCanvasElement;
+        const func = new Function("canvas", "context", "w", "h", code);
+        func(canvas, canvas.getContext("2d"), canvas.width, canvas.height);
       } catch (e) {
         this.handleError(e);
       }

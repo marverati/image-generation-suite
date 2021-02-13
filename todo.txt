@@ -26,6 +26,7 @@ Milestone 1: Useful & fun
 [ ] Animation pausing, resuming, stopping, variable playback speed
 
 Milestone 2: Usability
+[ ] Document Code
 [ ] Rename folders / snippets 
 [ ] Delete folders / snippets
 [ ] Moving folders / snippets

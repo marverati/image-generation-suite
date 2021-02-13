@@ -2,6 +2,7 @@
 
 import { exposeToWindow } from '@/util';
 import './ArrayExtension';
+import './color';
 
 declare global {
   interface HTMLCanvasElement {
@@ -59,6 +60,40 @@ export function setSize(w = 512, h = w): void {
   currentCanvas.dispatchEvent(new Event("resize"));
 }
 
+export async function animate(renderFunc: (dt: number, t: number) => (void | boolean), maxTime = 10000, t0 = 0, minStep = 0): Promise<void> {
+  let done = false;
+  const cancel = false; // let and expose to caller so they may cancel the thing
+  // let cancelFunction = () => {
+  //   cancel = true;
+  // }
+
+  let now = Date.now(), total = t0;
+  const speed = 1; // use let to be able to vary speed based on UI or pausing
+  function runFrame() {
+    // Handle timing
+    const prev = now;
+    const newNow = Date.now();
+    // Only update time and render things when minimum time step is surpassed (usually this is always true)
+    if (newNow - prev >= minStep) {
+      now = newNow;
+      const diff = now - prev;
+      const dt = speed * diff;
+      total += dt;
+      // TODO: mouse and keys
+    
+      // Run provided render code
+      done = !!renderFunc(dt, total);
+    }
+      
+
+    if (total < maxTime && !cancel && !done) {
+      requestAnimationFrame(runFrame);
+    }
+  }
+
+  runFrame();
+}
+
 export function gen(generator: Generator): void {
   filter((_, x, y) => generator(x, y));
 }
@@ -110,4 +145,4 @@ export function clear(): void {
   fill([0, 0, 0, 0]);
 }
 
-exposeToWindow({useCanvas, getCanvas, getContext, setSize, gen, filter, fill, clear });
+exposeToWindow({useCanvas, getCanvas, getContext, setSize, gen, filter, animate, fill, clear });

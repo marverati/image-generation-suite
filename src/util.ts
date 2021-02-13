@@ -3,6 +3,18 @@ import { WatchCallback } from "vue";
 
 type WatcherType = { immediate: boolean; handler: Function };
 
+export function rnd(minOrMax = 1, max?: number): number {
+  if (max == null) {
+    return Math.random() * minOrMax;
+  } else {
+    return minOrMax + Math.random() * (max - minOrMax);
+  }
+}
+
+export function absPow(v: number, exp = 1): number {
+  return (v < 0) ? -((-v) ** exp) : v ** exp;
+}
+
 export function initial(callback: WatchCallback<any, any>): { immediate: boolean; handler: WatchCallback<any, any> } {
   return {
     handler: callback,
@@ -37,3 +49,5 @@ export function cleanObject<T extends Record<string, any>>(obj: T): T {
   }
   return obj;
 }
+
+exposeToWindow({ rnd, absPow });
