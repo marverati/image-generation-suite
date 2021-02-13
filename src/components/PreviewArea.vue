@@ -1,11 +1,12 @@
 <template>
-  <div class="preview-area">
-      <div class="content">
+  <div class="preview-area" @drop.prevent="handleFileDrop" @dragover.prevent>
+      <div class="content" ref="content"
+          @dragenter="startDrop()">
         <h1>Preview</h1>
         <div class="canvas-space">
           <div class="canvas-div">
             <canvas ref="previewCanvas" width=812 height=512 @click="openPreview()" @resize="handleResize()"
-                :class="showBackground ? 'alpha-background' : ''" />
+                :class="{ 'alpha-background': showBackground, dropping: isDropping }" />
             <!-- Canvas Setting -->
             <div class="canvas-settings-spacing">
               <div class="spacing" />
@@ -19,6 +20,7 @@
           </div>
         </div>
       </div>
+      <div class="drop-overlay" v-show="isDropping" @dragleave="stopDrop()" @dragend="stopDrop()"> </div>
   </div>
 </template>
 
@@ -38,7 +40,9 @@ export default defineComponent({
   data: () => { return {
     showBackground: true,
     canvas: dummyCanvas,
-    updater: 0
+    updater: 0,
+    isDropping: false,
+    dragCount: 0
   }},
   computed: {
     context (): CanvasRenderingContext2D {
@@ -80,6 +84,43 @@ export default defineComponent({
     },
     forceUpdate() {
       this.updater++;
+    },
+    startDrop() {
+      this.isDropping = true;
+    },
+    stopDrop() {
+      this.isDropping = false;
+    },
+    handleFileDrop(event: DragEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      const files = event.dataTransfer?.files ?? [];
+      const file = files[0];
+      if (file.type.match(/image.*/)) {
+        const reader = new FileReader();
+        reader.onload = (loadEvent) => {
+          const img = document.createElement('img') as HTMLImageElement;
+          img.onload = () => {
+            console.log("Loaded image: " + file.name);
+            this.applyImage(img);
+          }
+          img.src = loadEvent.target?.result as string;
+        }
+        reader.readAsDataURL(file);
+      }
+      this.stopDrop();
+    },
+    applyImage(img: HTMLImageElement): void {
+      if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        this.canvas.width = img.naturalWidth;
+        this.canvas.height = img.naturalHeight;
+        const ctx = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+        ctx.save();
+        ctx.globalCompositeOperation = "copy";
+        ctx.drawImage(img, 0, 0);
+        ctx.restore();
+        console.log("Applied image to canvas: ", img);
+      }
     }
   },
   watch: {
@@ -103,6 +144,7 @@ export default defineComponent({
 <style scoped lang="scss">
 
 .preview-area {
+  position: relative;
   padding: 16px;
   .content {
     display: flex;
@@ -128,6 +170,9 @@ export default defineComponent({
           margin: auto;
           display: block;
           cursor: pointer;
+          filter: none;
+          box-shadow: inset 0 0 0px green;
+          transition: box-shadow 0.3s ease, filter 0.3s ease;
 
           &.alpha-background {
             // background-position: 0 0;
@@ -136,6 +181,10 @@ export default defineComponent({
             // background-image: url('~@/assets/checker.png');
             background: repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 
               50% / 20px 20px
+          }
+          &.dropping {
+            box-shadow: inset 0 0 12px green;
+            filter: blur(2px);
           }
         }
 
@@ -169,6 +218,15 @@ export default defineComponent({
         }
       }
     }
+  }
+
+  .drop-overlay {
+    background-color: #0008;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 }
 

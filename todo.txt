@@ -21,7 +21,7 @@ Milestone 1: Useful & fun
   [ ] HSL conversion (30m)
   [ ] Array affect methods (20m)
   [ ] Color Gradients
-[ ] Importing user pictures via drag&drop or button in preview (30m)
+[X] Importing user pictures via drag&drop or button in preview (30m)
 [X] Interactive animation mode using animate((dt, t) => renderCode)
 [ ] Animation pausing, resuming, stopping, variable playback speed
 
