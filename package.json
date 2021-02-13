@@ -1,5 +1,6 @@
 {
   "name": "image-generation-suite",
+  "description": "JavaScript/Canvas based image generation system for fast and expressive graphics programming",
   "version": "0.1.0",
   "private": true,
   "scripts": {
