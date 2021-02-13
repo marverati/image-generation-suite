@@ -20,14 +20,18 @@ Milestone 1: Useful & fun
   [ ] Coordinate system transformations (1h)
   [ ] HSL conversion (30m)
   [ ] Array affect methods (20m)
+  [ ] Color Gradients
 [ ] Importing user pictures via drag&drop or button in preview (30m)
+[ ] Interactive animation mode using animate((dt, t) => renderCode)
+[ ] Animation pausing, resuming, stopping, variable playback speed
 
 Milestone 2: Usability
 [ ] Rename folders / snippets 
 [ ] Delete folders / snippets
 [ ] Moving folders / snippets
-[ ] Render (fast) snippets immediately
-[ ] Asynchronous non-blocking running / rendering?
+[ ] Render (fast) snippets immediately upon opening
+[ ] Asynchronous non-blocking running / rendering? Maybe using asyncFilter(filterFunc, maxTimePerChunk = 2000)
+[ ] Varying transitioned grid layouts to focus on specific parts of editor, e.g. only params & preview
 [ ] Progress bar
 [ ] General help
 [ ] Parameter tutorial
@@ -45,10 +49,30 @@ Milestone 2: Usability
 
 Milestone 3: Additional features
 [ ] importing / running other snippets
+[ ] Using _params as input values for other snippets
 [ ] stats on script runtime
 [ ] saving/restoring favorite parameter snapshots for a code snippet
 [ ] Seed randomization
+[ ] Advanced / non-affine pixel coord transformations (e.g. tunnel, or fractal space distribution)
+[ ] Chaining transformations together
+[ ] Maybe overriding canvas context draw functions when non-affine transforms are in place? -> not hardware accelerated
 [ ] Keyboard shortcuts
 [ ] Exporting project tree as zip
 [ ] Code snippet versions
 [ ] Auto executable user code (special folder?) to easily write own extensions
+[ ] Syntax Highlighting
+[ ] "Exporting" individual snippets to standalone web app (e.g. 30 Day Challenge tool)
+[ ] Increase filtering performance by allowing lockContent(), filterStep(func), ...,  unlockContext(), reducing overhead
+[ ] WebGL fragment shaders for hardware acceleration
+[ ] Possibility to have special code input params to inject callbacks into other snippets
+
+Examples:
+[ ] Particle Animations
+[ ] 30 Day Challenges
+[ ] Box Blur
+[ ] Gauss Blur, using two consecutive box blurs
+[ ] Game of Life
+[ ] Rainbow Paint
+[ ] Raytracing
+[ ] Heightmap Paint -> smooth brushes cause smooth landscapes, not desired, more natural rough mountain brushes?
+[ ] Loading Animation folder containing many different loading animations
