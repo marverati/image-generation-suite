@@ -1,7 +1,9 @@
 <template>
-  <div class="project-tree">
+  <div :class="{ 'project-tree': true, 'drop': isDropping }"
+      @drop.prevent="handleFileDrop" @dragover.prevent @dragenter="isDropping = true" @dragleave="stopDrop" @dragend="stopDrop">
     <div class="tree-toolbar">
       <span class="save-button" @click="save()">Save</span>
+      <span class="export-button" @click="exportProject()">Export</span>
     </div>
     <div class="tree-content">
       <TreeFolder :folder="projectTree" :project="project" @openSnippet="openSnippet"/>
@@ -18,7 +20,7 @@ import TreeFolder from './subcomponents/TreeFolder.vue';
 import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
 import Project from '@/classes/Project';
-import { exposeToWindow } from '@/util';
+import { downloadText, exposeToWindow } from '@/util';
 
 export default defineComponent({
   name: 'ProjectTree',
@@ -26,6 +28,7 @@ export default defineComponent({
     TreeFolder
   },
   data: () => { return {
+    isDropping: false
   }},
   computed: {
     projectTree (): Folder {
@@ -39,6 +42,22 @@ export default defineComponent({
       const snippet = (payload as any).snippet;
       if (snippet) {
         this.project.openSnippet(snippet);
+      }
+    },
+    exportProject() {
+      console.log("Exporting project...");
+      try {
+        // First save all snippets
+        this.project.getProject().getAllSnippets().forEach(s => s.save());
+        // Then generate JSON
+        const obj = this.project.getProject().toJSON();
+        const json = JSON.stringify(obj);
+        downloadText("igs_workspace.txt", json);
+        alert("Note: to import a workspace json, simply drop the txt file onto the project tree");
+        console.info("Exported successfully");
+      } catch(e) {
+        console.error("Something went wrong, exporting failed!");
+        console.error(e);
       }
     },
     save() {
@@ -71,15 +90,56 @@ export default defineComponent({
         if (!json) {
           throw new Error("Stored JSON for key '" + slotKey + "' not found!");
         }
-        const obj = JSON.parse(json);
-        console.log("Loaded ", obj);
-        const project = Project.fromJSON(obj);
-        console.log("Created ", project);
-        this.$emit("switchProject", project);
+        this.loadJSON(json);
       } catch(e) {
         console.error("Something went wrong, loading failed!");
         console.error(e);
       }
+    },
+    loadJSON(json: string) {
+      console.log("Trying to load json: ", json.substr(0, 32) + "...");
+      if (!json) {
+        return;
+      }
+      const obj = JSON.parse(json);
+      const project = Project.fromJSON(obj);
+      console.log("Created ", project);
+      this.$emit("switchProject", project);
+    },
+    handleFileDrop(event: DragEvent): void {
+      event.preventDefault();
+      event.stopPropagation();
+      const files = event.dataTransfer?.files ?? [];
+      if (files.length === 1) {
+        const file = files[0];
+        if (file.type === "text/plain") {
+          const sure = confirm("Are you sure you want to import another igs project?"
+              + " Your current project will be lost. Ensure to export it beforehand.");
+          if (sure) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                this.loadJSON(e.target?.result as string);
+                alert("Project imported");
+              } catch (e) {
+                alert("Something went wrong during import. See console for details.");
+                console.error(e);
+              }
+            }
+            reader.readAsBinaryString(file);
+          } else {
+            alert("Import aborted");
+          }
+        } else {
+          console.error("Invalid file dropped; only plain text files containing json are allowed");
+        }
+      } else {
+        console.error("Illegal number of files dropped; just single text file allowed");
+      }
+      this.stopDrop();
+    },
+    stopDrop(): void {
+      this.isDropping = false;
     }
   },
   mounted () {
@@ -103,19 +163,33 @@ export default defineComponent({
   position: relative;
   width: 100%;
   height: 100%;
+  transition: box-shadow 0.5s ease;
+  
+  &.drop {
+    box-shadow: inset 0 0 12px blue;
+  }
+  
   .tree-content {
     padding: 16px;
     padding-top: 32px;
   }
 
-  .save-button {
-    position: absolute;
-    right: 0;
-    top: 0;
-    cursor: pointer;
-    &:hover {
-      color: black;
-      font-weight: bold;
+  .tree-toolbar {
+
+    span {
+      position: absolute;
+      top: 0;
+      cursor: pointer;
+      &:hover {
+        color: black;
+        font-weight: bold;
+      }
+    }
+    .save-button {
+      right: 0px;
+    }
+    .export-button {
+      right: 50px;
     }
   }
 }

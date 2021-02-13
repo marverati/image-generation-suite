@@ -13,7 +13,7 @@ Milestone 1: Useful & fun
   [ ] Create simple save/load PHP server (2h)
   [ ] Upload project tree to PHP server for single user (1h)
   [ ] Load project tree from PHP server (30m)
-  [ ] Allow user to manually export/import (without localstorage) (30m)
+  [X] Allow user to manually export/import (without localstorage) (30m)
 [ ] More helper functions in imageUtil and ArrayExtension
   [ ] Resize, rescale, scaleBelow (30m)
   [ ] Value mapping (15m)
@@ -22,7 +22,7 @@ Milestone 1: Useful & fun
   [ ] Array affect methods (20m)
   [ ] Color Gradients
 [ ] Importing user pictures via drag&drop or button in preview (30m)
-[ ] Interactive animation mode using animate((dt, t) => renderCode)
+[X] Interactive animation mode using animate((dt, t) => renderCode)
 [ ] Animation pausing, resuming, stopping, variable playback speed
 
 Milestone 2: Usability
