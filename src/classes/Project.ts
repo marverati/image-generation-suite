@@ -2,7 +2,7 @@ import AbstractProjectItem from "./AbstractProjectItem";
 import Folder, { FolderJSON } from "./Folder";
 import Snippet from "./Snippet";
 
-type ProjectJSON = {
+export type ProjectJSON = {
   version: number;
   type: "project";
   tree: FolderJSON;

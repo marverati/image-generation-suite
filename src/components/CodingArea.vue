@@ -44,7 +44,7 @@ export default defineComponent({
   },
   watch: {
     currentSnippet: function(s: Snippet) {
-      this.currentCode = s.getCode();
+      this.currentCode = s ? s.getCode() : "";
     },
     currentCode: function(code) {
       this.currentSnippet?.setCode(code);

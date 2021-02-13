@@ -63,4 +63,13 @@ export function downloadText(filename: string, text: string) {
   document.body.removeChild(element);
 }
 
-exposeToWindow({ rnd, absPow });
+function wobble(t: number, speedFactor = 1, offset = 0, power = 1) {
+  t = t * speedFactor * 0.001 + offset;
+  let v = (Math.sin(t) + Math.sin(t * 0.7934) + Math.sin(t * 0.31532) + Math.sin(t*0.23543)) * 0.25;
+  if (power != 1) {
+    v = absPow(v, power);
+  }
+  return v;
+}
+
+exposeToWindow({ rnd, absPow, wobble });

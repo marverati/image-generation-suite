@@ -19,8 +19,11 @@ import Folder from '@/classes/Folder';
 import TreeFolder from './subcomponents/TreeFolder.vue';
 import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
-import Project from '@/classes/Project';
+import Project, { ProjectJSON } from '@/classes/Project';
 import { downloadText, exposeToWindow } from '@/util';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const initialJson = require('@/assets/exampleProject.json');
 
 export default defineComponent({
   name: 'ProjectTree',
@@ -79,7 +82,7 @@ export default defineComponent({
         console.error(e);
       }
     },
-    load(slotNum?: number) {
+    load(slotNum?: number): boolean {
       try {
         if (slotNum == null) {
           slotNum = +(localStorage.getItem("slot") ?? 0);
@@ -90,10 +93,12 @@ export default defineComponent({
           throw new Error("Stored JSON for key '" + slotKey + "' not found!");
         }
         this.loadJSON(json);
+        return true;
       } catch(e) {
         console.error("Something went wrong, loading failed!");
         console.error(e);
       }
+      return false;
     },
     loadJSON(json: string) {
       console.log("Trying to load json: ", json.substr(0, 32) + "...");
@@ -101,8 +106,21 @@ export default defineComponent({
         return;
       }
       const obj = JSON.parse(json);
+      this.loadObject(obj);
+    },
+    loadObject(obj: ProjectJSON) {
       const project = Project.fromJSON(obj);
       this.$emit("switchProject", project);
+    },
+    resetProject() {
+      this.loadObject(initialJson);
+      this.project.openSnippet(null);
+    },
+    safeResetProject() {
+      if (confirm("Are you sure you want to reset your project? All your work will be lost!"
+          + " If you have important changes, click 'No' and Export your project first.")) {
+        this.resetProject();
+      }
     },
     handleFileDrop(event: DragEvent): void {
       event.preventDefault();
@@ -141,8 +159,10 @@ export default defineComponent({
     }
   },
   mounted () {
-    exposeToWindow({ loadFromLocalStorage: this.load.bind(this) });
-    this.load();
+    exposeToWindow({ loadFromLocalStorage: this.load.bind(this), resetProject: this.safeResetProject.bind(this) });
+    if (!this.load()) {
+      this.resetProject();
+    }
   },
   props: {
     project: {

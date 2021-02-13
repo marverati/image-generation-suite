@@ -73,7 +73,8 @@ Examples:
 [ ] Box Blur
 [ ] Gauss Blur, using two consecutive box blurs
 [ ] Game of Life
-[ ] Rainbow Paint
+[X] Hue Brush
+[X] Rainbow Paint
 [ ] Raytracing
 [ ] Heightmap Paint -> smooth brushes cause smooth landscapes, not desired, more natural rough mountain brushes?
 [ ] Loading Animation folder containing many different loading animations

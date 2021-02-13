@@ -3,6 +3,7 @@
 import { exposeToWindow } from '@/util';
 import './ArrayExtension';
 import './color';
+import './interpolation';
 
 declare global {
   interface HTMLCanvasElement {
@@ -12,6 +13,7 @@ declare global {
 
 HTMLCanvasElement.prototype.use = function() {
   useCanvas(this);
+  return this;
 }
 
 let currentCanvas: HTMLCanvasElement = document.createElement("canvas");
@@ -24,7 +26,7 @@ export type CssColor = Color | string;
 export type Filter = (c: Color, x: number, y: number) => Color;
 export type Generator = (x: number, y: number) => Color;
 
-export function useCanvas(canvas: HTMLCanvasElement) {
+export function useCanvas(canvas: HTMLCanvasElement = (window as any).previewCanvas) {
   currentCanvas = canvas;
   currentContext = canvas.getContext("2d") as CanvasRenderingContext2D;
   return canvas;
@@ -60,7 +62,8 @@ export function setSize(w = 512, h = w): void {
   currentCanvas.dispatchEvent(new Event("resize"));
 }
 
-export async function animate(renderFunc: (dt: number, t: number) => (void | boolean), maxTime = 10000, t0 = 0, minStep = 0): Promise<void> {
+export async function animate(renderFunc: (dt: number, t: number) => (void | boolean), maxTime = 10000,
+    baseSpeed = 1, t0 = 0, minStep = 0): Promise<void> {
   let done = false;
   const cancel = false; // let and expose to caller so they may cancel the thing
   // let cancelFunction = () => {
@@ -68,7 +71,7 @@ export async function animate(renderFunc: (dt: number, t: number) => (void | boo
   // }
 
   let now = Date.now(), total = t0;
-  const speed = 1; // use let to be able to vary speed based on UI or pausing
+  const speed = baseSpeed; // use let to be able to vary speed based on UI or pausing
   function runFrame() {
     // Handle timing
     const prev = now;
@@ -96,6 +99,27 @@ export async function animate(renderFunc: (dt: number, t: number) => (void | boo
 
 export function gen(generator: Generator): void {
   filter((_, x, y) => generator(x, y));
+}
+
+export function genRel(generator: Generator): void {
+  const w = currentCanvas.width, h = currentCanvas.height;
+  filter((_, x, y) => generator(x / w, y / h));
+}
+
+export function genCentered(generator: Generator): void {
+  const w = currentCanvas.width, h = currentCanvas.height;
+  const cx = (w + 1) / 2, cy = (h + 1) / 2;
+  filter((_, x, y) => generator((x - cx) / cx, (y - cy) / cy));
+}
+
+export function genRadial(generator: Generator): void {
+  const w = currentCanvas.width, h = currentCanvas.height;
+  const cx = (w + 1) / 2, cy = (h + 1) / 2;
+  filter((_, x, y) => {
+    const dx = x - cy, dy = y - cy;
+    const ang = Math.atan2(dx, dy), dis = Math.sqrt(dx * dx + dy * dy);
+    return generator(ang, dis);
+  });
 }
 
 export function filter(filterFunc: Filter): void {
@@ -145,4 +169,4 @@ export function clear(): void {
   fill([0, 0, 0, 0]);
 }
 
-exposeToWindow({useCanvas, getCanvas, getContext, setSize, gen, filter, animate, fill, clear });
+exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered, genRadial, genRel, filter, animate, fill, clear });
