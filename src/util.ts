@@ -11,8 +11,16 @@ export function rnd(minOrMax = 1, max?: number): number {
   }
 }
 
+export function clamp(v: number, min: number, max: number): number {
+  return v < min ? min : v > max ? max : v;
+}
+
 export function absPow(v: number, exp = 1): number {
   return (v < 0) ? -((-v) ** exp) : v ** exp;
+}
+
+export function absMod(v: number, mod: number): number {
+  return v < 0 ? (v % mod) + mod : v % mod;
 }
 
 export function initial(callback: WatchCallback<any, any>): { immediate: boolean; handler: WatchCallback<any, any> } {

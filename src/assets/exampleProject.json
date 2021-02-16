@@ -25,6 +25,11 @@
                         "code": "\n// Create external canvas for brush\nconst halfsz = 64;\nconst brush = createCanvas(2 * halfsz).use();\n\ngenRadial((ang, dis) => {\n  // Angle dependent color\n  const col = getSpectrumColor(ang / Math.PI / 2, 1.2);\n  // Adjust alpha value based on distance to center\n  col[3] = 255 - 255 * ease(dis / halfsz) ** 2;\n  return col;\n});\n\n// Return to preview canvas\nuseCanvas();\nclear();\ncontext.setTransform(1, 0, 0, 1, 0, 0);\ncontext.globalAlpha = 0.5;\ncontext.translate(w / 2, h / 2);\nanimate((dt, t) => {\n  const x = 400 * wobble(t, 3),\n    y = 300 * wobble(t, 2.4, 1.234),\n    angle = t * 0.0015;\n  context.save();\n  context.translate(x, y);\n  context.rotate(angle);\n  context.drawImage(brush, -halfsz, -halfsz);\n  context.restore();\n}, 20000, 1.5)"
                     },
                     {
+                        "name": "color gradient",
+                        "type": "code",
+                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst grad1 = new ColorGradient([\n  255,\n  [255, 0, 0],\n  [255, 255, 0],\n  [0, 255, 0],\n  [0, 255, 255],\n  [0, 0, 255, 100],\n  [255, 0, 255],\n  [255, 0, 0],\n  0\n]);\n\nconst grad = new ColorMapping((p) => [255*p,0,0])\n\ngenRadial((a, d) => grad1.get(d))"
+                    },
+                    {
                         "name": "fill",
                         "type": "code",
                         "code": "\n\nfill(200); // greyscale values between 0 and 255\n\nfill(\"red\"); // CSS colors\n\nclear(); // fully transparent black\n\nfill(); // fully opaque black\n\nfill([0, 128, 255]); // RGB array (blue)\n\nfill([255, 128, 0, 0.3]); // RGBA array (transparent orange)"
@@ -53,6 +58,11 @@
                         "name": "subsampling",
                         "type": "code",
                         "code": "setSize(512, 512);\n\n// Without subsampling\ngen((x, y) => {\n    return y < h / 4 + h / 6 * Math.sin(x * 0.01) ? 0 : 255;\n});\ncontext.font = \"24px Arial\";\ncontext.fillStyle = \"red\";\ncontext.fillText(\"No subsampling\", 20, 40);\n\nconst cnv = cloneCanvas();\n\n// With subsampling\ngen((x, y) => {\n    return y < h / 4 + h / 6 * Math.sin(x * 0.01) ? 0 : 255;\n}, 4);\ncontext.fillText(\"4x subsampling\", 20, 40);\n\n\n// Compare\ncontext.drawImage(cnv, 0, h / 2);"
+                    },
+                    {
+                        "name": "subsampling_radial",
+                        "type": "code",
+                        "code": "\nsetSize(512);\n\n// Render full generator the standard way\ngenRadial(colorize);\n\nconst cnv = cloneCanvas();\n\n// Render full generator with fancy subsampling\ngenRadial(colorize, 4);\n\n// Override left half with initial low quality rendering\ncontext.drawImage(cnv, 0, 0, w / 2, h, 0, 0, w / 2, h);\n\n// Separating bar in the middle\ncontext.fillStyle = \"black\";\ncontext.fillRect(w / 2 - 3, 0, 6, h);\n\n\nfunction colorize(a, d) {\n  const r = d % 0.2 < 0.1 ? 255 : 0,\n    g = ((a + Math.PI) % (Math.PI / 4) < (Math.PI / 8)) ? 255 : 0,\n    b = ((d % 0.3) < 0.15) ? 255 : 0;\n  return [r, g, b];\n}"
                     }
                 ]
             },
@@ -100,5 +110,5 @@
             }
         ]
     },
-    "date": 1613505976128
+    "date": 1613509984414
 }

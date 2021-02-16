@@ -5,6 +5,7 @@ import './ArrayExtension';
 import './color';
 import { blendManyColors } from './color';
 import './interpolation';
+import './ColorGradient';
 
 declare global {
   interface HTMLCanvasElement {

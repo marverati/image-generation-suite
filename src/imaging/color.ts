@@ -25,6 +25,18 @@ function rndBrightColor(power = 1, randomizeAlpha = false): ColorRGBA {
     return color;
 }
 
+export function colorToRGBA(color: ColorRGBA | ColorRGB | number): ColorRGBA {
+    if (color instanceof Array) {
+        if (color.length < 4) {
+            return [color[0], color[1], color[2], 255];
+        } else {
+            return color as ColorRGBA;
+        }
+    }
+    // is number
+    return [color, color, color, 255];
+}
+
 export function blendColors(c1: ColorRGBA, c2: ColorRGBA, f = 0.5): ColorRGBA {
     if (f === 0 || f === 1) {
         return f === 0 ? c1 : c2;
@@ -32,10 +44,10 @@ export function blendColors(c1: ColorRGBA, c2: ColorRGBA, f = 0.5): ColorRGBA {
     const a1 = (1 - f) * c1[3], a2 = f * c2[3];
     const alphaSum = a1 + a2;
     return [
-        255 * (a1 * c1[0] + a2 * c2[0]) / alphaSum,
-        255 * (a1 * c1[1] + a2 * c2[1]) / alphaSum,
-        255 * (a1 * c1[2] + a2 * c2[2]) / alphaSum,
-        alphaSum / 2
+        (a1 * c1[0] + a2 * c2[0]) / alphaSum,
+        (a1 * c1[1] + a2 * c2[1]) / alphaSum,
+        (a1 * c1[2] + a2 * c2[2]) / alphaSum,
+        alphaSum
     ];
 }
 
