@@ -19,7 +19,7 @@ Milestone 1: Useful & fun
   [X] Value mapping (15m)
   [ ] Coordinate system transformations (1h)
   [ ] HSL conversion (30m)
-  [ ] Array affect methods (20m)
+  [X] Array affect methods (20m)
   [ ] Color Gradients (30m)
   [ ] Subpixel generator (15m)
 [X] Importing user pictures via drag&drop or button in preview (30m)
