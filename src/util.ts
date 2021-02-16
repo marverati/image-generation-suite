@@ -72,4 +72,13 @@ function wobble(t: number, speedFactor = 1, offset = 0, power = 1) {
   return v;
 }
 
-exposeToWindow({ rnd, absPow, wobble });
+export function mapRange(v: number, fromMin: number, fromMax: number, toMin: number, toMax: number): number {
+  return toMin + (v - fromMin) * (toMax - toMin) / (fromMax - fromMin); 
+}
+
+export function getRangeMapping(fromMin: number, fromMax: number, toMin: number, toMax: number): (v: number) => number {
+  const scale = (toMax - toMin) / (fromMax - fromMin);
+  return (v: number) => toMin + (v - fromMin) * scale;
+}
+
+exposeToWindow({ rnd, absPow, wobble, mapRange, getRangeMapping });
