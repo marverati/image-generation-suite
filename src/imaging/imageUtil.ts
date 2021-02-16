@@ -57,9 +57,55 @@ export function getContext(): CanvasRenderingContext2D {
 }
 
 export function setSize(w = 512, h = w): void {
-  currentCanvas.width = w;
-  currentCanvas.height = h;
+  currentCanvas.width = Math.round(w);
+  currentCanvas.height = Math.round(h);
   currentCanvas.dispatchEvent(new Event("resize"));
+}
+
+export function scaleFast(scalex = 1, scaley = scalex, keepContent = true) {
+  if (keepContent) {
+    const cnv = cloneCanvas(currentCanvas);
+    setSize(currentCanvas.width * scalex, currentCanvas.height * scaley);
+    currentContext.drawImage(cnv, 0, 0, currentCanvas.width, currentCanvas.height);
+  } else {
+    setSize(currentCanvas.width * scalex, currentCanvas.height * scaley);
+  }
+}
+
+export function scaleSmooth(scalex = 1, scaley = scalex, maxSteps = 10) {
+  if (scalex >= 0.5 && scaley >= 0.5) {
+    scaleFast(scalex, scaley, true);
+  } else {
+    const w = currentCanvas.width, h = currentCanvas.height;
+    const cnv = cloneCanvas(currentCanvas);
+    const ctx = cnv.getContext("2d") as CanvasRenderingContext2D;
+    const steps = Math.min(maxSteps, Math.ceil(Math.log2(1 / Math.min(scalex, scaley))));
+    let currentSX = 1, currentSY = 1, lastSX = 1, lastSY = 1;
+    for (let step = 0; step < steps; step++) {
+      currentSX = Math.max(scalex, currentSX / 2);
+      currentSY = Math.max(scaley, currentSY / 2);
+      ctx.drawImage(currentCanvas, 0, 0, w, h, 0, 0, w * currentSX / lastSX, h * currentSY / lastSY);
+      lastSX = currentSX;
+      lastSY = currentSY;
+    }
+    // Final resize
+    setSize(currentCanvas.width * scalex, currentCanvas.height * scaley);
+    currentContext.drawImage(cnv, 0, 0, currentCanvas.width, currentCanvas.height);
+  }
+}
+
+export const scaleSize = scaleSmooth;
+
+export function scaleBelow(width: number, height = width, highQuality = true) {
+  const sx = width / currentCanvas.width, sy = height / currentCanvas.height;
+  const scale = Math.min(sx, sy);
+  if (scale < 1) {
+    if (highQuality) {
+      scaleSmooth(scale);
+    } else {
+      scaleFast(scale);
+    }
+  }
 }
 
 export async function animate(renderFunc: (dt: number, t: number) => (void | boolean), maxTime = 10000,
@@ -169,4 +215,10 @@ export function clear(): void {
   fill([0, 0, 0, 0]);
 }
 
-exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered, genRadial, genRel, filter, animate, fill, clear });
+export function getHueDiff(a: number, b: number): number {
+  const diff = (a - b) % 1;
+  return diff > 0.5 ? 1 - diff : diff < -0.5 ? diff + 1 : diff;
+}
+
+exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
+    genRadial, genRel, filter, animate, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow });

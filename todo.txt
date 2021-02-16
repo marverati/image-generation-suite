@@ -15,7 +15,8 @@ Milestone 1: Useful & fun
   [ ] Load project tree from PHP server (30m)
   [X] Allow user to manually export/import (without localstorage) (30m)
 [ ] More helper functions in imageUtil and ArrayExtension
-  [ ] Resize, rescale, scaleBelow (30m)
+  [X] setSize, scale, scaleBelow (30m)
+  [ ] Crop, resize (keep content) (30m)
   [X] Value mapping (15m)
   [ ] Coordinate system transformations (1h)
   [ ] HSL conversion (30m)
@@ -43,6 +44,7 @@ Milestone 2: Usability
   [ ] String Input
   [ ] Enum
   [ ] 2D slider
+  [ ] Color Gradients / Hue Slider
 [ ] render legend on slider parameters (min, max, ...)
 [ ] parameter randomization button 
 [ ] Error handling and display
