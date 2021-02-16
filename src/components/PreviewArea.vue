@@ -171,7 +171,7 @@ export default defineComponent({
           display: block;
           cursor: pointer;
           filter: none;
-          box-shadow: inset 0 0 0px green;
+          // box-shadow: inset 0 0 0px green;
           transition: box-shadow 0.3s ease, filter 0.3s ease;
 
           &.alpha-background {

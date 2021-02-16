@@ -165,25 +165,26 @@ export function gen(generator: Generator, subsamples = 1): void {
   }
 }
 
-export function genRel(generator: Generator): void {
+export function genRel(generator: Generator, subsamples?: number): void {
   const w = currentCanvas.width, h = currentCanvas.height;
-  gen(((x, y) => generator(x / w, y / h)) as Generator);
+  gen(((x, y) => generator(x / w, y / h)) as Generator, subsamples);
 }
 
-export function genCentered(generator: Generator): void {
+export function genCentered(generator: Generator, subsamples?: number): void {
   const w = currentCanvas.width, h = currentCanvas.height;
   const cx = (w + 1) / 2, cy = (h + 1) / 2;
-  gen(((x, y) => generator((x - cx) / cx, (y - cy) / cy)) as Generator);
+  gen(((x, y) => generator((x - cx) / cx, (y - cy) / cy)) as Generator, subsamples);
 }
 
-export function genRadial(generator: Generator): void {
+export function genRadial(generator: Generator, subsamples?: number): void {
   const w = currentCanvas.width, h = currentCanvas.height;
+  const size = Math.max(w, h) / 2;
   const cx = (w + 1) / 2, cy = (h + 1) / 2;
   gen(((x, y) => {
     const dx = x - cy, dy = y - cy;
-    const ang = Math.atan2(dx, dy), dis = Math.sqrt(dx * dx + dy * dy);
+    const ang = Math.atan2(dx, dy), dis = Math.sqrt(dx * dx + dy * dy) / size;
     return generator(ang, dis);
-  }) as Generator);
+  }) as Generator, subsamples);
 }
 
 export function filter(filterFunc: Filter): void {
@@ -214,6 +215,8 @@ export function filter(filterFunc: Filter): void {
       data[p++] = result[2];
       if (result[3] != null) {
         data[p++] = result[3];
+      } else {
+        data[p++] = 255;
       }
     }
   }
