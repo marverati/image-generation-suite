@@ -3,6 +3,7 @@
 import { exposeToWindow } from '@/util';
 import './ArrayExtension';
 import './color';
+import { blendManyColors } from './color';
 import './interpolation';
 
 declare global {
@@ -21,10 +22,12 @@ let currentContext: CanvasRenderingContext2D = currentCanvas.getContext("2d") as
 
 export type ColorRGB = [number, number, number];
 export type ColorRGBA = [number, number, number, number];
-export type Color = ColorRGB | ColorRGBA | number;
-export type CssColor = Color | string; 
-export type Filter = (c: Color, x: number, y: number) => Color;
-export type Generator = (x: number, y: number) => Color;
+export type CssColor = ColorRGB | ColorRGBA | number | string; 
+export type Filter = ((c: ColorRGBA, x: number, y: number) => number)
+    | ((c: ColorRGBA, x: number, y: number) => ColorRGB)
+    | ((c: ColorRGBA, x: number, y: number) => ColorRGBA);
+export type Generator = ((x: number, y: number) => number) | ((x: number, y: number) => ColorRGB)
+    | ((x: number, y: number) => ColorRGBA);
 
 export function useCanvas(canvas: HTMLCanvasElement = (window as any).previewCanvas) {
   currentCanvas = canvas;
@@ -143,29 +146,44 @@ export async function animate(renderFunc: (dt: number, t: number) => (void | boo
   runFrame();
 }
 
-export function gen(generator: Generator): void {
-  filter((_, x, y) => generator(x, y));
+export function gen(generator: Generator, subsamples = 1): void {
+  if (subsamples <= 1) {
+    filter(((_, x, y) => generator(x, y)) as Filter);
+  } else {
+    const step = 1 / subsamples;
+    const off = -(1 - step) / 2;
+    filter((_, x, y) => {
+      const colors = [];
+      for (let sy = 0; sy < subsamples; sy++) {
+        const py = y + off + sy * step;
+        for (let sx = 0; sx < subsamples; sx++) {
+          colors.push(generator(x + off + sx * step, py));
+        }
+      }
+      return blendManyColors(colors as (number[] | ColorRGB[] | ColorRGBA[]));
+    });
+  }
 }
 
 export function genRel(generator: Generator): void {
   const w = currentCanvas.width, h = currentCanvas.height;
-  filter((_, x, y) => generator(x / w, y / h));
+  gen(((x, y) => generator(x / w, y / h)) as Generator);
 }
 
 export function genCentered(generator: Generator): void {
   const w = currentCanvas.width, h = currentCanvas.height;
   const cx = (w + 1) / 2, cy = (h + 1) / 2;
-  filter((_, x, y) => generator((x - cx) / cx, (y - cy) / cy));
+  gen(((x, y) => generator((x - cx) / cx, (y - cy) / cy)) as Generator);
 }
 
 export function genRadial(generator: Generator): void {
   const w = currentCanvas.width, h = currentCanvas.height;
   const cx = (w + 1) / 2, cy = (h + 1) / 2;
-  filter((_, x, y) => {
+  gen(((x, y) => {
     const dx = x - cy, dy = y - cy;
     const ang = Math.atan2(dx, dy), dis = Math.sqrt(dx * dx + dy * dy);
     return generator(ang, dis);
-  });
+  }) as Generator);
 }
 
 export function filter(filterFunc: Filter): void {
@@ -173,7 +191,7 @@ export function filter(filterFunc: Filter): void {
   const dataObj = currentContext.getImageData(0, 0, w, h);
   const data = dataObj.data;
   let p = 0;
-  const col: Color = [0, 0, 0, 0];
+  const col: ColorRGBA = [0, 0, 0, 0];
   const example = filterFunc(col, 0, 0);
   if (typeof example === "number") {
     const original = filterFunc;
@@ -182,8 +200,8 @@ export function filter(filterFunc: Filter): void {
       return [c, c, c, 255];
     }
   }
-  const typedFilterFunc = filterFunc as ((c: Color, x: number, y: number) => ColorRGB | ColorRGBA);
-  let result: Color = col;
+  const typedFilterFunc = filterFunc as ((c: ColorRGBA, x: number, y: number) => ColorRGBA);
+  let result: ColorRGBA = col;
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       col[0] = data[p];

@@ -19,10 +19,10 @@ Milestone 1: Useful & fun
   [ ] Crop, resize (keep content) (30m)
   [X] Value mapping (15m)
   [ ] Coordinate system transformations (1h)
-  [ ] HSL conversion (30m)
+  [X] HSL conversion (30m)
   [X] Array affect methods (20m)
   [ ] Color Gradients (30m)
-  [ ] Subpixel generator (15m)
+  [X] Subpixel generator (15m)
 [X] Importing user pictures via drag&drop or button in preview (30m)
 [X] Interactive animation mode using animate((dt, t) => renderCode)
 [ ] Animation pausing, resuming, stopping, variable playback speed
