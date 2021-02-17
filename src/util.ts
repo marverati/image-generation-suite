@@ -80,6 +80,21 @@ function wobble(t: number, speedFactor = 1, offset = 0, power = 1) {
   return v;
 }
 
+export function range(startOrEnd: number, end?: number, step = (end != null && end < startOrEnd) ? -1 : 1): number[] {
+  const start = end != null ? startOrEnd : 0;
+  if (step === 0) {
+    return [ start ];
+  }
+  const result = [];
+  end = end != null ? end : startOrEnd;
+  if (step > 0) {
+    for (let i = start; i < end; i += step) { result.push(i); }
+  } else {
+    for (let i = start; i > end; i += step) { result.push(i); }
+  }
+  return result;
+}
+
 export function mapRange(v: number, fromMin: number, fromMax: number, toMin: number, toMax: number): number {
   return toMin + (v - fromMin) * (toMax - toMin) / (fromMax - fromMin); 
 }
@@ -89,4 +104,4 @@ export function getRangeMapping(fromMin: number, fromMax: number, toMin: number,
   return (v: number) => toMin + (v - fromMin) * scale;
 }
 
-exposeToWindow({ rnd, absPow, wobble, mapRange, getRangeMapping });
+exposeToWindow({ rnd, absPow, wobble, mapRange, getRangeMapping, range, clamp });
