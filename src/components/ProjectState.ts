@@ -1,5 +1,6 @@
 import Project from "@/classes/Project";
 import Snippet from "@/classes/Snippet";
+import { getCanvas } from "@/imaging/imageUtil";
 
 export default class ProjectState {
   private project: Project;
@@ -29,11 +30,15 @@ export default class ProjectState {
   public runCode(): void {
     if (this.currentlyOpenSnippet != null) {
       this.currentlyOpenSnippet.clearParams();
-      const code = this.currentlyOpenSnippet.getCode();
+      let code = this.currentlyOpenSnippet.getCode();
       try {
         const canvas = (window as any).previewCanvas as HTMLCanvasElement;
-        const func = new Function("canvas", "context", "w", "h", code);
-        func(canvas, canvas.getContext("2d"), canvas.width, canvas.height);
+        // Add w & h getters to code
+        code = "if (this.w == null) Object.defineProperty(this, 'w', { get: function() {return previewCanvas.width} });"
+            + "if (this.h == null) Object.defineProperty(this, 'h', { get: function() {return previewCanvas.height} });"
+            + "clipRect();" + code;
+        const func = new Function("canvas", "context", code);
+        func(canvas, canvas.getContext("2d"));
       } catch (e) {
         this.handleError(e);
       }

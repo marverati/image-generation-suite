@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { exposeToWindow } from '@/util';
 import './ArrayExtension';
@@ -21,6 +22,8 @@ HTMLCanvasElement.prototype.use = function() {
 let currentCanvas: HTMLCanvasElement = document.createElement("canvas");
 let currentContext: CanvasRenderingContext2D = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
 
+let clipX = 0, clipY = 0, clipW = Infinity, clipH = Infinity;
+
 export type ColorRGB = [number, number, number];
 export type ColorRGBA = [number, number, number, number];
 export type CssColor = ColorRGB | ColorRGBA | number | string; 
@@ -33,6 +36,7 @@ export type Generator = ((x: number, y: number) => number) | ((x: number, y: num
 export function useCanvas(canvas: HTMLCanvasElement = (window as any).previewCanvas) {
   currentCanvas = canvas;
   currentContext = canvas.getContext("2d") as CanvasRenderingContext2D;
+  clipRect();
   return canvas;
 } 
 
@@ -60,9 +64,30 @@ export function getContext(): CanvasRenderingContext2D {
   return currentContext;
 }
 
+export function clipRect(x = 0, y = 0, w = Infinity, h = Infinity, applyToContext = false): void {
+  clipX = Math.max(x, 0) << 0;
+  clipY = Math.max(y, 0) << 0;
+  clipW = Math.min(w, currentCanvas.width - x) << 0;
+  clipH = Math.min(h, currentCanvas.height - y) << 0;
+  if (applyToContext) {
+    // Note: if applied to context, caller must make sure to use .save() and .restore() in order to get rid of
+    // clipping at a later point in time. Sadly, canvas API is severely lacking in this regard and I have no
+    // way to clear/reset/change clipping myself, it's a destructive operation. So I need this flag and cautious
+    // usage. Sad!
+    currentContext.beginPath();
+    currentContext.rect(clipX, clipY, clipW, clipH);
+    currentContext.clip();
+  }
+}
+
+export function getClipping(): number[] {
+  return [clipX, clipY, clipW, clipH];
+}
+
 export function setSize(w = 512, h = w): void {
   currentCanvas.width = Math.round(w);
   currentCanvas.height = Math.round(h);
+  clipRect(clipX, clipY, clipW, clipH);
   currentCanvas.dispatchEvent(new Event("resize"));
 }
 
@@ -204,8 +229,10 @@ export function filter(filterFunc: Filter): void {
   }
   const typedFilterFunc = filterFunc as ((c: ColorRGBA, x: number, y: number) => ColorRGBA);
   let result: ColorRGBA = col;
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
+  const ymax = clipY + clipH, xmax = clipX + clipW;
+  for (let y = clipY; y < ymax; y++) {
+    p = 4 * (clipX + w * y);
+    for (let x = clipX; x < xmax; x++) {
       col[0] = data[p];
       col[1] = data[p + 1];
       col[2] = data[p + 2];
@@ -243,4 +270,5 @@ export function getHueDiff(a: number, b: number): number {
 }
 
 exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
-    genRadial, genRel, filter, animate, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow });
+    genRadial, genRel, filter, animate, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
+    clipRect, getClipping });
