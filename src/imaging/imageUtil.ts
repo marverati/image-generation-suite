@@ -80,6 +80,11 @@ export function clipRect(x = 0, y = 0, w = Infinity, h = Infinity, applyToContex
   }
 }
 
+export function clipRel(x = 0, y = 0, w = 1, h = 1, applyToContext?: boolean): void {
+  const cw = currentCanvas.width, ch = currentCanvas.height;
+  clipRect(x * cw, y * ch, w * cw, h * ch, applyToContext);
+}
+
 export function getClipping(): number[] {
   return [clipX, clipY, clipW, clipH];
 }
@@ -125,7 +130,7 @@ export function scaleSmooth(scalex = 1, scaley = scalex, maxSteps = 10) {
 
 export const scaleSize = scaleSmooth;
 
-export function scaleBelow(width: number, height = width, highQuality = true) {
+export function scaleBelow(width: number, height = width, highQuality = false) {
   const sx = width / currentCanvas.width, sy = height / currentCanvas.height;
   const scale = Math.min(sx, sy);
   if (scale < 1) {
@@ -271,4 +276,4 @@ export function getHueDiff(a: number, b: number): number {
 
 exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
     genRadial, genRel, filter, animate, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
-    clipRect, getClipping });
+    clipRect, clipRel, getClipping });

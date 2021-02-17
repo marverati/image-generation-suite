@@ -34,7 +34,7 @@ Milestone 2: Usability
 [ ] Rename folders / snippets 
 [ ] Delete folders / snippets
 [ ] Moving folders / snippets
-[ ] Clipping Rect for Generators and Filters
+[X] Clipping Rect for Generators and Filters
 [ ] Render (fast) snippets immediately upon opening
 [ ] Asynchronous non-blocking running / rendering? Maybe using asyncFilter(filterFunc, maxTimePerChunk = 2000)
 [ ] Varying transitioned grid layouts to focus on specific parts of editor, e.g. only params & preview
@@ -84,3 +84,8 @@ Examples:
 [ ] Raytracing
 [ ] Heightmap Paint -> smooth brushes cause smooth landscapes, not desired, more natural rough mountain brushes?
 [ ] Loading Animation folder containing many different loading animations
+[ ] Zoomable Mandelbrot
+[ ] Parameterized Julia Set
+[ ] Pythagoras Tree 
+[ ] Sierpinski Triangle / Carpet
+[ ] Segment Fractal

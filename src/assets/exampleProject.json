@@ -27,7 +27,12 @@
                     {
                         "name": "color gradient",
                         "type": "code",
-                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst grad1 = new ColorGradient([\n  255,\n  [255, 0, 0],\n  [255, 255, 0],\n  [0, 255, 0],\n  [0, 255, 255],\n  [0, 0, 255, 100],\n  [255, 0, 255],\n  [255, 0, 0],\n  0\n]);\n\nconst grad = new ColorMapping((p) => [255*p,0,0])\n\ngenRadial((a, d) => grad1.get(d))"
+                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst grad1 = new ColorGradient([\n  255,\n  [255, 0, 0],\n  [255, 255, 0],\n  [0, 255, 0],\n  [0, 255, 255],\n  [0, 0, 255, 100],\n  [255, 0, 255],\n  [255, 0, 0],\n  0\n], \"cubic\");\n\nconst grad = new ColorMapping((p) => [255*p,0,0])\n\ngenRadial((a, d) => grad1.get(d))"
+                    },
+                    {
+                        "name": "color gradient nonuniform",
+                        "type": "code",
+                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst v = _param('Red Pos', 0.5, 0.001, 0.999, 0.001)\n\nconst grad = new ColorGradient({\n  0: 255,\n  [v]: [255, 0, 0],\n  1: 0\n}, \"cos3\");\n\ngenRadial((a, d) => grad.get(d))"
                     },
                     {
                         "name": "fill",
@@ -47,7 +52,12 @@
                     {
                         "name": "hsl conversion",
                         "type": "code",
-                        "code": "/*\nBy default pixel data is in RGBA, each value between 0 and 255. Sometimes however what you want to work with may not be RGB, but the more meaningful HSL color space (hue, saturation, luminance, each between 0 and 1).\nFor such cases, you may temporarily convert values between them using the provided Array methods toHSL() and toRGB().\nAlternatively, appropriate affector methods exist as well.\n\nMake sure to load an image before running this code.\n*/\n\nconst hue = _param('Hue', 0.3, 0, 1, 0.001);\n\n// Hue shift\n// filter(c => c.affectH(h => h + 0.3))\n\n// Increase saturation\nfilter(c => c.affectS(s => s ** 0.5))\n\n// Reduce luminance\nfilter(c => c.affectL(s => s ** 1.4))\n\n// Slightly more complex: nullify saturation for all colors outside a certain hue range\nfilter(c => {\n  // Convert to HSL first\n  c.toHSL();\n  \n  // Calculate saturation factor based on hue difference from reference\n  const diff = getHueDiff(c[0], hue);\n  const satFactor = mapRange(Math.abs(diff), 0, 0.5, 1, 0) ** 2;\n  // Apply to saturation\n  c[1] *= satFactor;\n\n  // Don't forget to convert back to RGB in the end\n  return c.toRGB();\n})"
+                        "code": "/*\nBy default pixel data is in RGBA, each value between 0 and 255. Sometimes however what you want to work with may not be RGB, but the more meaningful HSL color space (hue, saturation, luminance, each between 0 and 1).\nFor such cases, you may temporarily convert values between them using the provided Array methods toHSL() and toRGB().\nAlternatively, appropriate affector methods exist as well.\n\nMake sure to load an image before running this code.\n*/\n\nscaleBelow(1000, 1000, false);\n\nconst hue = _param('Hue', 0.3, 0, 1, 0.001);\n\n// Hue shift\nclipRel(0.1, 0.1, 0.2, 0.2);\nfilter(c => c.affectH(h => h + 0.5))\n\n// Increase saturation\nclipRel(0.4, 0.1, 0.2, 0.2);\nfilter(c => c.affectS(s => s ** 0.5))\n\n// Reduce luminance\nclipRel(0.7, 0.1, 0.2, 0.2);\nfilter(c => c.affectL(s => s ** 2))\n\n// Slightly more complex: nullify saturation for all colors outside a certain hue range\nclipRel(0.1, 0.4, 0.2, 0.5);\nfilter(c => {\n  // Convert to HSL first\n  c.toHSL();\n  \n  // Calculate saturation factor based on hue difference from reference\n  const diff = getHueDiff(c[0], hue);\n  const satFactor = mapRange(Math.abs(diff), 0, 0.5, 1, 0) ** 2;\n  // Apply to saturation\n  c[1] *= satFactor;\n\n  // Don't forget to convert back to RGB in the end\n  return c.toRGB();\n})\n\n// Apply rainbow color to area\nclipRel(0.4, 0.4, 0.2, 0.5);\nfilter((c, x, y) => {\n  c.toHSL();\n  c[0] = (2 * y / h) % 1;\n  c[1] = c[1] ** 0.5;\n  return c.toRGB();\n});"
+                    },
+                    {
+                        "name": "interpolation",
+                        "type": "code",
+                        "code": "\nsetSize(600, 400);\nfill(\"white\");\n\nconst heights = [\n  0.5,\n  0.5,\n  1,\n  0,\n  0.5,\n  0.7,\n  0.3,\n  0.6,\n  1\n];\n\ncontext.strokeStyle = \"#0001\";\n\n// Simple 2 point interpolations\nfor (let int of [\"step0\", \"linear\", \"cubic\", \"cos3\"]) {\n  context.beginPath();\n  for (let x = 1; x < 7; x += 0.01) {\n    const y1 = heights[Math.floor(x)], y2 = heights[Math.floor(x) + 1];\n    const y = y1 + (y2 - y1) * Interpolation[int](x - Math.floor(x));\n    context.lineTo(80 * x - 30, 300 - 100 * y);\n  }\n  context.stroke();\n}\n\n\ncontext.strokeStyle = \"#000f\";\n\n// Fancy 4 point interpolations\nfor (let int of [\"smoothBound\"]) {\n  context.beginPath();\n  for (let x = 1; x < 8; x += 0.01) {\n    const i = Math.floor(x);\n    const y = FourPointInterpolation[int](\n      heights[i - 1], heights[i], heights[i + 1], heights[i + 2], x - i\n    );\n    context.lineTo(80 * x - 30, 300 - 100 * clamp(y, 0, 1));\n  }\n  context.stroke();\n}"
                     },
                     {
                         "name": "params",
@@ -62,7 +72,7 @@
                     {
                         "name": "subsampling_radial",
                         "type": "code",
-                        "code": "\nsetSize(512);\n\n// Render full generator the standard way\ngenRadial(colorize);\n\nconst cnv = cloneCanvas();\n\n// Render full generator with fancy subsampling\ngenRadial(colorize, 4);\n\n// Override left half with initial low quality rendering\ncontext.drawImage(cnv, 0, 0, w / 2, h, 0, 0, w / 2, h);\n\n// Separating bar in the middle\ncontext.fillStyle = \"black\";\ncontext.fillRect(w / 2 - 3, 0, 6, h);\n\n\nfunction colorize(a, d) {\n  const r = d % 0.2 < 0.1 ? 255 : 0,\n    g = ((a + Math.PI) % (Math.PI / 4) < (Math.PI / 8)) ? 255 : 0,\n    b = ((d % 0.3) < 0.15) ? 255 : 0;\n  return [r, g, b];\n}"
+                        "code": "\nsetSize(512);\n\n// Render generator the standard way to left half\nclipRect(0, 0, w / 2, h);\ngenRadial(colorize);\n\n// Render generator with fancy subsampling to right half\nclipRect(w / 2, 0);\ngenRadial(colorize, 4);\n\n\n// Separating bar in the middle\ncontext.fillStyle = \"black\";\ncontext.fillRect(w / 2 - 3, 0, 6, h);\n\n\nfunction colorize(a, d) {\n  const r = d % 0.2 < 0.1 ? 255 : 0,\n    g = ((a + Math.PI) % (Math.PI / 4) < (Math.PI / 8)) ? 255 : 0,\n    b = ((d % 0.3) < 0.15) ? 255 : 0;\n  return [r, g, b];\n}"
                     }
                 ]
             },
@@ -76,9 +86,25 @@
                         "code": "console.log(\"Amazing code!\");"
                     },
                     {
+                        "name": "rainbow",
+                        "type": "code",
+                        "code": "\nscaleBelow(1000);\n\nfilter((c, x, y) => {\n  c.toHSL();\n  c[0] = y / h;\n  c[1] = c[1] ** 0.5;\n  return c.toRGB();\n});"
+                    },
+                    {
                         "name": "testCode",
                         "type": "code",
                         "code": ""
+                    }
+                ]
+            },
+            {
+                "name": "Fractals",
+                "type": "folder",
+                "children": [
+                    {
+                        "name": "mandelbrot",
+                        "type": "code",
+                        "code": "setSize(512);\n\nconst iterations = 100;\n\nconst grad = new ColorGradient([\n  0,\n  [255, 0, 0],\n  [255, 255, 0],\n  255,\n  0\n]);\n\ngenCentered((x, y) => {\n  let a = 0, b = 0, tmp = 0, i = 0;\n  for (; i < iterations && a * a + b * b < 4; i++) {\n    // c -> c² + (x,y)\n    tmp = a * a - b * b;\n    b = 2 * a * b + y;\n    a = tmp + x;\n  }\n  return grad.get(i / iterations);\n}, 2);"
                     }
                 ]
             },
@@ -110,5 +136,5 @@
             }
         ]
     },
-    "date": 1613509984414
+    "date": 1613598250785
 }
