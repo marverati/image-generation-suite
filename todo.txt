@@ -21,7 +21,9 @@ Milestone 1: Useful & fun
   [ ] Coordinate system transformations (1h)
   [X] HSL conversion (30m)
   [X] Array affect methods (20m)
-  [ ] Color Gradients (30m)
+  [X] Color Gradients (30m)
+  [X] Color Gradient Interpolation
+  [ ] Smooth Color Gradient Interpolation
   [X] Subpixel generator (15m)
 [X] Importing user pictures via drag&drop or button in preview (30m)
 [X] Interactive animation mode using animate((dt, t) => renderCode)
@@ -32,6 +34,7 @@ Milestone 2: Usability
 [ ] Rename folders / snippets 
 [ ] Delete folders / snippets
 [ ] Moving folders / snippets
+[ ] Clipping Rect for Generators and Filters
 [ ] Render (fast) snippets immediately upon opening
 [ ] Asynchronous non-blocking running / rendering? Maybe using asyncFilter(filterFunc, maxTimePerChunk = 2000)
 [ ] Varying transitioned grid layouts to focus on specific parts of editor, e.g. only params & preview
