@@ -41,6 +41,7 @@ Milestone 2: Usability
 [ ] Progress bar
 [ ] General help
 [ ] Parameter tutorial
+[ ] Code Syntax Highlighting
 [ ] enable additional parameter types
   [ ] Checkbox
   [ ] Number Input

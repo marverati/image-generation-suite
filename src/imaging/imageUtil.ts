@@ -92,7 +92,8 @@ export function getClipping(): number[] {
 export function setSize(w = 512, h = w): void {
   currentCanvas.width = Math.round(w);
   currentCanvas.height = Math.round(h);
-  clipRect(clipX, clipY, clipW, clipH);
+  clipRect();
+  // clipRect(clipX, clipY, clipW, clipH);
   currentCanvas.dispatchEvent(new Event("resize"));
 }
 
@@ -204,7 +205,8 @@ export function genRel(generator: Generator, subsamples?: number): void {
 export function genCentered(generator: Generator, subsamples?: number): void {
   const w = currentCanvas.width, h = currentCanvas.height;
   const cx = (w + 1) / 2, cy = (h + 1) / 2;
-  gen(((x, y) => generator((x - cx) / cx, (y - cy) / cy)) as Generator, subsamples);
+  const size = Math.min(cx, cy);
+  gen(((x, y) => generator((x - cx) / size, (y - cy) / size)) as Generator, subsamples);
 }
 
 export function genRadial(generator: Generator, subsamples?: number): void {

@@ -2,7 +2,7 @@
   <div class="code-area">
       <div class="content" v-if="currentSnippet != null" @keydown="handleKey">
         <h1>{{currentSnippet.name}}</h1>
-        <textarea class="code" v-model="currentCode" />
+        <textarea class="code" v-model="currentCode" wrap="off" />
       </div>
   </div>
 </template>
