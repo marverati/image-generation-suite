@@ -31,7 +31,12 @@ export function _param(label: string, initialValue: number, minOrMax: number, ma
 }
 
 export function _checkbox(label: string, initialValue: boolean): boolean {
-  return initialValue; // TODO implement
+  const snippet = getProject().getOpenSnippet();
+  if (!snippet) {
+    return initialValue;
+  }
+  const object = snippet.getParam(label, "boolean", initialValue);
+  return object.value;
 }
 
 export function _enum(label: string, initialValue: string, values: string[]): string {

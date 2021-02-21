@@ -13,8 +13,9 @@
               :step="param.object.step" type="range" v-model="param.value" @change="refresh()" />
           <!-- Num Input -->
           <input v-if="param.type == 'number'" :min="param.object.min" :max="param.object.max"
-              :step="param.object.step" v-model="param.value" />
+              :step="param.object.step" v-model="param.value" @change="refresh()" />
           <!-- Checkbox -->
+          <input type="checkbox" v-if="param.type == 'boolean'" v-model="param.value" @change="refresh()" />
           <!-- Enum -->
           <!-- String Input -->
         </div>
