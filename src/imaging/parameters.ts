@@ -16,7 +16,7 @@ export function getProject(): ProjectState {
   return project;
 }
 
-export function _param(label: string, initialValue: number, minOrMax: number, max?: number, step?: number): number {
+export function _number(label: string, initialValue: number, minOrMax: number, max?: number, step?: number): number {
   const snippet = getProject().getOpenSnippet();
   if (!snippet) {
     return initialValue;
@@ -30,17 +30,31 @@ export function _param(label: string, initialValue: number, minOrMax: number, ma
   return object.value;
 }
 
-export function _checkbox(label: string, initialValue: boolean): boolean {
+export function _boolean(label: string, initialValue: boolean): boolean {
   const snippet = getProject().getOpenSnippet();
   if (!snippet) {
     return initialValue;
   }
   const object = snippet.getParam(label, "boolean", initialValue);
+  return !!object.value;
+}
+
+export function _string(label: string, initialValue: string): string {
+  const snippet = getProject().getOpenSnippet();
+  if (!snippet) {
+    return initialValue;
+  }
+  const object = snippet.getParam(label, "string", initialValue);
   return object.value;
 }
 
 export function _enum(label: string, initialValue: string, values: string[]): string {
-  return values ? initialValue : ""; // TODO implement 
+  const snippet = getProject().getOpenSnippet();
+  if (!snippet) {
+    return initialValue;
+  }
+  const object = snippet.getParam(label, "enum", initialValue, { values });
+  return object.value;
 }
 
-exposeToWindow({_param, _checkbox, _enum});
+exposeToWindow({_number, _boolean, _string, _enum});

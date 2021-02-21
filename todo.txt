@@ -43,10 +43,10 @@ Milestone 2: Usability
 [ ] Parameter tutorial
 [ ] Code Syntax Highlighting
 [ ] enable additional parameter types
-  [ ] Checkbox
-  [ ] Number Input
-  [ ] String Input
-  [ ] Enum
+  [X] Checkbox
+  [X] Number Input
+  [X] String Input
+  [X] Enum
   [ ] 2D slider
   [ ] Color Gradients / Hue Slider
 [ ] render legend on slider parameters (min, max, ...)

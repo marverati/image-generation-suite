@@ -7,6 +7,7 @@ import './color';
 import { blendManyColors } from './color';
 import './interpolation';
 import './ColorGradient';
+import './animation';
 
 declare global {
   interface HTMLCanvasElement {
@@ -33,7 +34,7 @@ export type Filter = ((c: ColorRGBA, x: number, y: number) => number)
 export type Generator = ((x: number, y: number) => number) | ((x: number, y: number) => ColorRGB)
     | ((x: number, y: number) => ColorRGBA);
 
-export function useCanvas(canvas: HTMLCanvasElement = (window as any).previewCanvas) {
+export function useCanvas(canvas: HTMLCanvasElement = getPreviewCanvas()) {
   currentCanvas = canvas;
   currentContext = canvas.getContext("2d") as CanvasRenderingContext2D;
   clipRect();
@@ -58,6 +59,10 @@ export function cloneCanvas(canvas = currentCanvas): HTMLCanvasElement {
 
 export function getCanvas(): HTMLCanvasElement {
   return currentCanvas;
+}
+
+export function getPreviewCanvas(): HTMLCanvasElement {
+  return (window as any).previewCanvas;
 }
 
 export function getContext(): CanvasRenderingContext2D {
@@ -141,41 +146,6 @@ export function scaleBelow(width: number, height = width, highQuality = false) {
       scaleFast(scale);
     }
   }
-}
-
-export async function animate(renderFunc: (dt: number, t: number) => (void | boolean), maxTime = 10000,
-    baseSpeed = 1, t0 = 0, minStep = 0): Promise<void> {
-  let done = false;
-  const cancel = false; // let and expose to caller so they may cancel the thing
-  // let cancelFunction = () => {
-  //   cancel = true;
-  // }
-
-  let now = Date.now(), total = t0;
-  const speed = baseSpeed; // use let to be able to vary speed based on UI or pausing
-  function runFrame() {
-    // Handle timing
-    const prev = now;
-    const newNow = Date.now();
-    // Only update time and render things when minimum time step is surpassed (usually this is always true)
-    if (newNow - prev >= minStep) {
-      now = newNow;
-      const diff = now - prev;
-      const dt = speed * diff;
-      total += dt;
-      // TODO: mouse and keys
-    
-      // Run provided render code
-      done = !!renderFunc(dt, total);
-    }
-      
-
-    if (total < maxTime && !cancel && !done) {
-      requestAnimationFrame(runFrame);
-    }
-  }
-
-  runFrame();
 }
 
 export function gen(generator: Generator, subsamples = 1): void {
@@ -277,5 +247,5 @@ export function getHueDiff(a: number, b: number): number {
 }
 
 exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
-    genRadial, genRel, filter, animate, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
+    genRadial, genRel, filter, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
     clipRect, clipRel, getClipping });

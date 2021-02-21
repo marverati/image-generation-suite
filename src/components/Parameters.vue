@@ -9,15 +9,19 @@
         <div class="parameter" v-for="param in params" :key="param.label">
           <label>{{param.label}}:</label>
           <!-- Num Slider -->
-          <input v-if="param.type == 'range'" :min="param.object.min" :max="param.object.max"
-              :step="param.object.step" type="range" v-model="param.value" @change="refresh()" />
+          <input v-if="param.type == 'range'" :min="param.data.min" :max="param.data.max"
+              :step="param.data.step" type="range" v-model="param.value" @change="refresh()" />
           <!-- Num Input -->
-          <input v-if="param.type == 'number'" :min="param.object.min" :max="param.object.max"
-              :step="param.object.step" v-model="param.value" @change="refresh()" />
+          <input v-if="param.type == 'number'" :min="param.data.min" :max="param.data.max"
+              :step="param.data.step" v-model="param.value" @change="refresh()" />
           <!-- Checkbox -->
           <input type="checkbox" v-if="param.type == 'boolean'" v-model="param.value" @change="refresh()" />
-          <!-- Enum -->
           <!-- String Input -->
+          <input v-if="param.type == 'string'" v-model="param.value" @change="refresh()" />
+          <!-- Enum -->
+          <select v-if="param.type == 'enum'" v-model="param.value" @change="refresh()">
+            <option v-for="name in param.data.values" :key="name">{{name}}</option>
+          </select>
         </div>
       </div>
   </div>

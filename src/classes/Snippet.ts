@@ -9,7 +9,7 @@ export type SnippetParameter = {
   type: ParamType;
   value: any;
   inUse: boolean;
-  object: Record<string, any>;
+  data: Record<string, any>;
 }
 
 export type SnippetJSON = {
@@ -93,7 +93,7 @@ export default class Snippet extends AbstractProjectItem {
         label,
         type,
         value: initialValue,
-        object: properties,
+        data: properties,
         inUse: true
       };
       this.params.push(param);
@@ -102,9 +102,11 @@ export default class Snippet extends AbstractProjectItem {
       const wasInUse = param.inUse;
       param.inUse = true;
       // Update parameter properties (e.g. min, max, ...)
-      if (shallowObjectsDiffer(param.object, properties)) {
-        param.object = properties;
-        param.value = initialValue;
+      // TODO use better not quite so shallow check, to support enum values array
+      if (shallowObjectsDiffer(param.data, properties)) {
+        param.data = properties;
+        // TODO enable after objectsDiffer check is better
+        // param.value = initialValue;
         this.informParamListeners();
       } else if (!wasInUse) {
         this.informParamListeners();

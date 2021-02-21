@@ -22,17 +22,17 @@
                     {
                         "name": "brush",
                         "type": "code",
-                        "code": "\n// Create external canvas for brush\nconst halfsz = 64;\nconst brush = createCanvas(2 * halfsz).use();\n\ngenRadial((ang, dis) => {\n  // Angle dependent color\n  const col = getSpectrumColor(ang / Math.PI / 2, 1.2);\n  // Adjust alpha value based on distance to center\n  col[3] = 255 - 255 * ease(dis / halfsz) ** 2;\n  return col;\n});\n\n// Return to preview canvas\nuseCanvas();\nclear();\ncontext.setTransform(1, 0, 0, 1, 0, 0);\ncontext.globalAlpha = 0.5;\ncontext.translate(w / 2, h / 2);\nanimate((dt, t) => {\n  const x = 400 * wobble(t, 3),\n    y = 300 * wobble(t, 2.4, 1.234),\n    angle = t * 0.0015;\n  context.save();\n  context.translate(x, y);\n  context.rotate(angle);\n  context.drawImage(brush, -halfsz, -halfsz);\n  context.restore();\n}, 20000, 1.5)"
+                        "code": "\n// Create external canvas for brush\nconst halfsz = 64;\nconst brush = createCanvas(2 * halfsz).use();\n\ngenRadial((ang, dis) => {\n  // Angle dependent color\n  const col = getSpectrumColor(ang / Math.PI / 2, 1.2);\n  // Adjust alpha value based on distance to center\n  col[3] = 255 - 255 * ease(dis) ** 2;\n  return col;\n});\n\n// Return to preview canvas\nuseCanvas();\nclear();\ncontext.setTransform(1, 0, 0, 1, 0, 0);\ncontext.globalAlpha = 0.5;\ncontext.translate(w / 2, h / 2);\nanimate((dt, t) => {\n  const x = 400 * wobble(t, 3),\n    y = 300 * wobble(t, 2.4, 1.234),\n    angle = t * 0.0045;\n  context.save();\n  context.translate(x, y);\n  context.rotate(angle);\n  context.drawImage(brush, -halfsz, -halfsz);\n  context.restore();\n}, 20000, 0.8)"
                     },
                     {
                         "name": "color gradient",
                         "type": "code",
-                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst grad1 = new ColorGradient([\n  255,\n  [255, 0, 0],\n  [255, 255, 0],\n  [0, 255, 0],\n  [0, 255, 255],\n  [0, 0, 255, 100],\n  [255, 0, 255],\n  [255, 0, 0],\n  0\n], \"cubic\");\n\nconst grad = new ColorMapping((p) => [255*p,0,0])\n\ngenRadial((a, d) => grad1.get(d))"
+                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst gradName = _enum(\"Gradient\", \"red\", [\"grayscale\", \"red\", \"green\", \"blue\", \"rainbow\", \"wild\"]);\n\nconst gradients = {\n  \"grayscale\": ColorGradient.grayscale,\n  \"red\": ColorGradient.redscale,\n  \"green\": ColorGradient.greenscale,\n  \"blue\": ColorGradient.bluescale,\n  \"rainbow\": ColorGradient.rainbow2,\n  \"wild\": new ColorGradient([\n    255,\n    [255, 0, 0],\n    [255, 255, 0],\n    [0, 255, 0],\n    [0, 255, 255],\n    [0, 0, 255, 100],\n    [255, 0, 255],\n    [255, 0, 0],\n    0\n  ], \"cubic\", \"mirror\")\n}\n\nconst grad = gradients[gradName];\n\ngenRadial((a, d) => grad.get(d));"
                     },
                     {
                         "name": "color gradient nonuniform",
                         "type": "code",
-                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst v = _param('Red Pos', 0.5, 0.001, 0.999, 0.001)\n\nconst grad = new ColorGradient({\n  0: 255,\n  [v]: [255, 0, 0],\n  1: 0\n}, \"cos3\");\n\ngenRadial((a, d) => grad.get(d))"
+                        "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst v = _number('Red Pos', 0.5, 0.001, 0.999, 0.001)\n\nconst grad = new ColorGradient({\n  0: 255,\n  [v]: [255, 0, 0],\n  1: 0\n}, \"cos3\");\n\ngenRadial((a, d) => grad.get(d))"
                     },
                     {
                         "name": "fill",
@@ -62,7 +62,7 @@
                     {
                         "name": "params",
                         "type": "code",
-                        "code": "\nsetSize(512, 512);\nconst lanes = _param(\"Lanes\", 3, 0, 32, 1);\nconst disScale = _param(\"Scaling\", 0.02, 0, 0.5, 0.001);\n\nconst c = getCanvas();\nconst cx = c.width / 2, cy = c.height / 2;\n\ngen((x, y) => {\n  const dx = x - cx, dy = y - cy;\n  const dis = Math.sqrt(dx * dx + dy * dy);\n  const angle = Math.atan2(dx, dy);\n  const v = Math.sin(dis * disScale + angle * lanes);\n  return 127.5 + 127.5 * v;\n});"
+                        "code": "\nsetSize(512, 512);\n\n// Parameters\nconst lanes = _number(\"Lanes\", 3, 0, 32, 1);\nconst disScale = _number(\"Scaling\", 0.02, 0, 0.5, 0.001);\nconst invert = _boolean(\"Invert\", false);\nconst title = _string(\"Title\", \"\");\nconst gradient = _enum(\"Colorization\", \"grayscale\", [\"grayscale\", \"fire\", \"water\", \"rainbow\"]);\n\nconst gradients = {\n  \"grayscale\": new ColorGradient([0, 255]),\n  \"fire\": new ColorGradient([[80,0,0], [255,0,0], [255,255,0], 255]),\n  \"water\": new ColorGradient([[0,0,100],[0,120,220],[30,160,250],[120,220,255]]),\n  \"rainbow\": ColorGradient.rainbow\n}\nconst grad = gradients[gradient];\n\nconst c = getCanvas();\nconst cx = c.width / 2, cy = c.height / 2;\n\n// Generate spirale\ngen((x, y) => {\n  const dx = x - cx, dy = y - cy;\n  const dis = Math.sqrt(dx * dx + dy * dy);\n  const angle = Math.atan2(dx, dy) * (invert ? -1 : 1);\n  const v = Math.sin(dis * disScale + angle * lanes);\n  return grad.get(0.5 + 0.5 * v);\n});\n\n// Add title string\nif (title != \"\") {\n  context.fillStyle = \"black\";\n  context.textAlign = \"center\";\n  context.font = \"36px Arial\";\n  context.fillText(title, w / 2 + 1, 40 + 1);\n  context.fillStyle = \"red\";\n  context.fillText(title, w / 2, 40);\n}"
                     },
                     {
                         "name": "subsampling",
@@ -104,7 +104,7 @@
                     {
                         "name": "mandelbrot",
                         "type": "code",
-                        "code": "setSize(512);\n\nconst iterations = 100;\n\nconst grad = new ColorGradient([\n  0,\n  [255, 0, 0],\n  [255, 255, 0],\n  255,\n  0\n]);\n\ngenCentered((x, y) => {\n  let a = 0, b = 0, tmp = 0, i = 0;\n  for (; i < iterations && a * a + b * b < 4; i++) {\n    // c -> c² + (x,y)\n    tmp = a * a - b * b;\n    b = 2 * a * b + y;\n    a = tmp + x;\n  }\n  return grad.get(i / iterations);\n}, 2);"
+                        "code": "setSize(800, 512);\nclipRect();\n\nconst iterations = 100;\n\nconst grad = new ColorGradient([\n  [0, 0, 0, 0], 0,\n  [255, 0, 0],\n  [255, 255, 0],\n  255,\n  0, [0, 0, 0, 0]\n]);\n\ngenCentered((x, y) => {\n  let a = 0, b = 0, tmp = 0, i = 0;\n  for (; i < iterations && a * a + b * b < 4; i++) {\n    // c -> c² + (x,y)\n    tmp = a * a - b * b;\n    b = 2 * a * b + y;\n    a = tmp + x;\n  }\n  return grad.get(i / iterations);\n}, 2);"
                     }
                 ]
             },
@@ -136,5 +136,5 @@
             }
         ]
     },
-    "date": 1613598250785
+    "date": 1613923178318
 }

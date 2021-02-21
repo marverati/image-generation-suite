@@ -1,5 +1,5 @@
 import { exposeToWindow } from "@/util";
-import { blendColors, colorToRGBA } from "./color";
+import { blendColors, colorToRGBA, getSpectrumColor } from "./color";
 import ColorMapping, { ColorMappingFunction, ColorMappingOverflow } from "./ColorMapping";
 import { ColorRGB, ColorRGBA } from "./imageUtil";
 import { Interpolation, InterpolationMode } from "./interpolation";
@@ -43,6 +43,26 @@ export default class ColorGradient extends ColorMapping {
             };
         }
     }
+
+    public static readonly rainbow = new ColorGradient([
+        [128,0,255],
+        [0,0,255],
+        [0,255,255],
+        [0,255,0],
+        [255,255,0],
+        [255,0,0],
+        [128,0,255]
+    ]);
+
+    public static readonly rainbow2 = new ColorMapping((p) => getSpectrumColor(p, 1));
+
+    public static readonly grayscale = new ColorGradient([0, 255]);
+
+    public static readonly redscale = new ColorGradient([0, [255, 0, 0], [255 ,255, 0], 255]);
+
+    public static readonly bluescale = new ColorGradient([0, [0, 0, 255], [0, 255, 255], 255]);
+
+    public static readonly greenscale = new ColorGradient([0, [0, 128, 0], [128, 255, 128], 255]);
 }
 
 exposeToWindow({ ColorGradient });
