@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "npm run serve",
     "serve": "vue-cli-service serve --port 8090",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",

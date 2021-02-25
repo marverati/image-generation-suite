@@ -25,6 +25,8 @@ Milestone 1: Useful & fun
   [X] Color Gradient Interpolation
   [ ] Smooth Color Gradient Interpolation
   [X] Subpixel generator (15m)
+  [ ] Buffered filtering, with function to access neighbour or absolute pixels
+  [ ] Buffered filtering with smooth interpolation of non-integer coordinates
 [X] Importing user pictures via drag&drop or button in preview (30m)
 [X] Interactive animation mode using animate((dt, t) => renderCode)
 [ ] Animation pausing, resuming, stopping, variable playback speed
@@ -38,6 +40,7 @@ Milestone 2: Usability
 [ ] Render (fast) snippets immediately upon opening
 [ ] Asynchronous non-blocking running / rendering? Maybe using asyncFilter(filterFunc, maxTimePerChunk = 2000)
 [ ] Varying transitioned grid layouts to focus on specific parts of editor, e.g. only params & preview
+[ ] Template folder to select from for new snippets
 [ ] Progress bar
 [ ] General help
 [ ] Parameter tutorial
@@ -90,3 +93,4 @@ Examples:
 [ ] Pythagoras Tree 
 [ ] Sierpinski Triangle / Carpet
 [ ] Segment Fractal
+[ ] Replacing Sky

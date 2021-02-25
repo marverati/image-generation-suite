@@ -8,6 +8,7 @@ import { blendManyColors } from './color';
 import './interpolation';
 import './ColorGradient';
 import './animation';
+import { Filter, filter } from './filter';
 
 declare global {
   interface HTMLCanvasElement {
@@ -20,17 +21,14 @@ HTMLCanvasElement.prototype.use = function() {
   return this;
 }
 
-let currentCanvas: HTMLCanvasElement = document.createElement("canvas");
-let currentContext: CanvasRenderingContext2D = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
+export let currentCanvas: HTMLCanvasElement = document.createElement("canvas");
+export let currentContext: CanvasRenderingContext2D = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
 
 let clipX = 0, clipY = 0, clipW = Infinity, clipH = Infinity;
 
 export type ColorRGB = [number, number, number];
 export type ColorRGBA = [number, number, number, number];
 export type CssColor = ColorRGB | ColorRGBA | number | string; 
-export type Filter = ((c: ColorRGBA, x: number, y: number) => number)
-    | ((c: ColorRGBA, x: number, y: number) => ColorRGB)
-    | ((c: ColorRGBA, x: number, y: number) => ColorRGBA);
 export type Generator = ((x: number, y: number) => number) | ((x: number, y: number) => ColorRGB)
     | ((x: number, y: number) => ColorRGBA);
 
@@ -190,43 +188,6 @@ export function genRadial(generator: Generator, subsamples?: number): void {
   }) as Generator, subsamples);
 }
 
-export function filter(filterFunc: Filter): void {
-  const w = currentCanvas.width, h = currentCanvas.height;
-  const dataObj = currentContext.getImageData(0, 0, w, h);
-  const data = dataObj.data;
-  let p = 0;
-  const col: ColorRGBA = [0, 0, 0, 0];
-  const example = filterFunc(col, 0, 0);
-  if (typeof example === "number") {
-    const original = filterFunc;
-    filterFunc = (col, x, y) => {
-      const c = original(col, x, y) as number;
-      return [c, c, c, 255];
-    }
-  }
-  const typedFilterFunc = filterFunc as ((c: ColorRGBA, x: number, y: number) => ColorRGBA);
-  let result: ColorRGBA = col;
-  const ymax = clipY + clipH, xmax = clipX + clipW;
-  for (let y = clipY; y < ymax; y++) {
-    p = 4 * (clipX + w * y);
-    for (let x = clipX; x < xmax; x++) {
-      col[0] = data[p];
-      col[1] = data[p + 1];
-      col[2] = data[p + 2];
-      col[3] = data[p + 3];
-      result = typedFilterFunc(col, x, y);
-      data[p++] = result[0];
-      data[p++] = result[1];
-      data[p++] = result[2];
-      if (result[3] != null) {
-        data[p++] = result[3];
-      } else {
-        data[p++] = 255;
-      }
-    }
-  }
-  currentContext.putImageData(dataObj, 0, 0);
-}
 
 export function fill(c: CssColor | number): void {
   currentContext.save();
@@ -247,5 +208,5 @@ export function getHueDiff(a: number, b: number): number {
 }
 
 exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
-    genRadial, genRel, filter, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
+    genRadial, genRel, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
     clipRect, clipRel, getClipping });
