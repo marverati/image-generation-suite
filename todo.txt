@@ -25,7 +25,7 @@ Milestone 1: Useful & fun
   [X] Color Gradient Interpolation
   [ ] Smooth Color Gradient Interpolation
   [X] Subpixel generator (15m)
-  [ ] Buffered filtering, with function to access neighbour or absolute pixels
+  [X] Buffered filtering, with function to access neighbour or absolute pixels
   [ ] Buffered filtering with smooth interpolation of non-integer coordinates
 [X] Importing user pictures via drag&drop or button in preview (30m)
 [X] Interactive animation mode using animate((dt, t) => renderCode)
