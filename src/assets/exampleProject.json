@@ -20,9 +20,19 @@
                         "code": "clear();\nlet i = 0;\nanimate((dt, t) => {\n  \n  const p = t / 4000;\n  context.fillStyle = getSpectrumColor(p, 1.2).toRGBA();\n  context.fillRect(p * w, 0, 20, h);\n}, 20000);"
                     },
                     {
+                        "name": "boxblur",
+                        "type": "code",
+                        "code": "const w1 = w - 1, h1 = h - 1;\n\nconst rx = _number(\"DisX\", 20, 0, 256, 1);\nconst ry = _number(\"DisY\", rx, 0, 256, 1);\nconst rx1 = Math.floor(rx / 2), ry1 = Math.floor(ry / 2);\nconst rx2 = rx - rx1, ry2 = ry - ry1;\n\n// First: get sum of R, G, B\nconst sums = [ [], [], [] ];\nconst getters = getChannelGetters();\nfor (let off = 0; off < 3; off++) {\n  const g = getters[off];\n  const data = sums[off];\n  for (let y = 0; y < h; y++) {\n    data[y] = [];\n  }\n  data[0][0] = g(0, 0);\n  // Top row\n  for (let x = 1; x < w; x++) {\n    data[0][x] = data[0][x - 1] + g(x, 0);\n  }\n  // Left row\n  for (let y = 1; y < h; y++) {\n    data[y][0] = data[y - 1][0] + g(0, y);\n  }\n  // Inner\n  for (let y = 1; y < h; y++) {\n    for (let x = 1; x < w; x++) {\n      data[y][x] = data[y - 1][x] + data[y][x - 1] - data[y - 1][x - 1] + g(x, y);\n    }\n  }\n}\n\n// Second: compute average for all pixels\nfilter((c, x, y) => {\n  const x1 = Math.max(0, x - rx1), y1 = Math.max(0, y - ry1);\n  const x2 = Math.min(w1, x + rx2), y2 = Math.min(h1, y + ry2);\n  for (let off = 0; off < 3; off++) {\n    const sum = sums[off][y2][x2] - sums[off][y1][x2] - sums[off][y2][x1] + sums[off][y1][x1];\n    const count = (x2 - x1) * (y2 - y1);\n    c[off] = sum / count;\n  }\n  return c;\n});\nconsole.log(\"done\");"
+                    },
+                    {
                         "name": "brush",
                         "type": "code",
                         "code": "\n// Create external canvas for brush\nconst halfsz = 64;\nconst brush = createCanvas(2 * halfsz).use();\n\ngenRadial((ang, dis) => {\n  // Angle dependent color\n  const col = getSpectrumColor(ang / Math.PI / 2, 1.2);\n  // Adjust alpha value based on distance to center\n  col[3] = 255 - 255 * ease(dis) ** 2;\n  return col;\n});\n\n// Return to preview canvas\nuseCanvas();\nclear();\ncontext.setTransform(1, 0, 0, 1, 0, 0);\ncontext.globalAlpha = 0.5;\ncontext.translate(w / 2, h / 2);\nanimate((dt, t) => {\n  const x = 400 * wobble(t, 3),\n    y = 300 * wobble(t, 2.4, 1.234),\n    angle = t * 0.0045;\n  context.save();\n  context.translate(x, y);\n  context.rotate(angle);\n  context.drawImage(brush, -halfsz, -halfsz);\n  context.restore();\n}, 20000, 0.8)"
+                    },
+                    {
+                        "name": "bufferedFilter",
+                        "type": "code",
+                        "code": "const w1 = w - 1, h1 = h - 1;\n\n// Mirror (note: can be implemented much faster with context.scale and context.drawImage)\n/* filter((c, x, y, g) => {\n  return g(w1 - x, y);\n}, true); */\n\n// Primitive blur\nclipRect(1, 1, w - 2, h - 2)\nfilter((c, x, y, g) => {\n  const colors = [\n    c,\n    g(x - 1, y),\n    g(x, y - 1),\n    g(x + 1, y),\n    g(x, y + 1)\n  ];\n  return blendManyColors(colors);\n}, true);"
                     },
                     {
                         "name": "color gradient",
@@ -52,7 +62,7 @@
                     {
                         "name": "hsl conversion",
                         "type": "code",
-                        "code": "/*\nBy default pixel data is in RGBA, each value between 0 and 255. Sometimes however what you want to work with may not be RGB, but the more meaningful HSL color space (hue, saturation, luminance, each between 0 and 1).\nFor such cases, you may temporarily convert values between them using the provided Array methods toHSL() and toRGB().\nAlternatively, appropriate affector methods exist as well.\n\nMake sure to load an image before running this code.\n*/\n\nscaleBelow(1000, 1000, false);\n\nconst hue = _param('Hue', 0.3, 0, 1, 0.001);\n\n// Hue shift\nclipRel(0.1, 0.1, 0.2, 0.2);\nfilter(c => c.affectH(h => h + 0.5))\n\n// Increase saturation\nclipRel(0.4, 0.1, 0.2, 0.2);\nfilter(c => c.affectS(s => s ** 0.5))\n\n// Reduce luminance\nclipRel(0.7, 0.1, 0.2, 0.2);\nfilter(c => c.affectL(s => s ** 2))\n\n// Slightly more complex: nullify saturation for all colors outside a certain hue range\nclipRel(0.1, 0.4, 0.2, 0.5);\nfilter(c => {\n  // Convert to HSL first\n  c.toHSL();\n  \n  // Calculate saturation factor based on hue difference from reference\n  const diff = getHueDiff(c[0], hue);\n  const satFactor = mapRange(Math.abs(diff), 0, 0.5, 1, 0) ** 2;\n  // Apply to saturation\n  c[1] *= satFactor;\n\n  // Don't forget to convert back to RGB in the end\n  return c.toRGB();\n})\n\n// Apply rainbow color to area\nclipRel(0.4, 0.4, 0.2, 0.5);\nfilter((c, x, y) => {\n  c.toHSL();\n  c[0] = (2 * y / h) % 1;\n  c[1] = c[1] ** 0.5;\n  return c.toRGB();\n});"
+                        "code": "/*\nBy default pixel data is in RGBA, each value between 0 and 255. Sometimes however what you want to work with may not be RGB, but the more meaningful HSL color space (hue, saturation, luminance, each between 0 and 1).\nFor such cases, you may temporarily convert values between them using the provided Array methods toHSL() and toRGB().\nAlternatively, appropriate affector methods exist as well.\n\nMake sure to load an image before running this code.\n*/\n\nscaleBelow(1000, 1000, false);\n\nconst hue = _number('Hue', 0.3, 0, 1, 0.001);\n\n// Hue shift\nclipRel(0.1, 0.1, 0.2, 0.2);\nfilter(c => c.affectH(h => h + 0.5))\n\n// Increase saturation\nclipRel(0.4, 0.1, 0.2, 0.2);\nfilter(c => c.affectS(s => s ** 0.5))\n\n// Reduce luminance\nclipRel(0.7, 0.1, 0.2, 0.2);\nfilter(c => c.affectL(s => s ** 2))\n\n// Slightly more complex: nullify saturation for all colors outside a certain hue range\nclipRel(0.1, 0.4, 0.2, 0.5);\nfilter(c => {\n  // Convert to HSL first\n  c.toHSL();\n  \n  // Calculate saturation factor based on hue difference from reference\n  const diff = getHueDiff(c[0], hue);\n  const satFactor = mapRange(Math.abs(diff), 0, 0.5, 1, 0) ** 2;\n  // Apply to saturation\n  c[1] *= satFactor;\n\n  // Don't forget to convert back to RGB in the end\n  return c.toRGB();\n})\n\n// Apply rainbow color to area\nclipRel(0.4, 0.4, 0.2, 0.5);\nfilter((c, x, y) => {\n  c.toHSL();\n  c[0] = (2 * y / h) % 1;\n  c[1] = c[1] ** 0.5;\n  return c.toRGB();\n});"
                     },
                     {
                         "name": "interpolation",
@@ -136,5 +146,5 @@
             }
         ]
     },
-    "date": 1613923178318
+    "date": 1614290210178
 }

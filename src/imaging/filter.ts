@@ -7,11 +7,57 @@ export type Filter = ((c: ColorRGBA, x: number, y: number, get: GetColor) => num
     | ((c: ColorRGBA, x: number, y: number, get: GetColor) => ColorRGB)
     | ((c: ColorRGBA, x: number, y: number, get: GetColor) => ColorRGBA);
 
+export type PixelAnalyzer = ((c: ColorRGBA, x: number, y: number) => void);
+
+export type PixelReducer<T> = ((current: T, c: ColorRGBA) => T);
+
 export type GetColor = (x: number, y: number) => ColorRGBA;
+export type GetNumber = (x: number, y: number) => number;
 
 export enum BUFFER_TYPE {
     NONE = "none",
     BUFFER = "buffer"
+}
+
+export function getPixelGetter(): GetColor {
+    const w = currentCanvas.width, h = currentCanvas.height;
+    const dataObj = currentContext.getImageData(0, 0, w, h);
+    return prepareBufferOrGetter(BUFFER_TYPE.NONE, dataObj);
+}
+
+export function getChannelGetters(): [ GetNumber, GetNumber, GetNumber, GetNumber ] {
+    const w = currentCanvas.width, h = currentCanvas.height;
+    const dataObj = currentContext.getImageData(0, 0, w, h);
+    const data = dataObj.data;
+    const getters = [0, 1, 2, 3].map(off => (x: number, y: number) => data[4 * (x + w * y) + off]) as [ GetNumber, GetNumber, GetNumber, GetNumber ];
+    return getters;
+}
+
+export function analyzePixels(analyzer: PixelAnalyzer): void {
+    const w = currentCanvas.width, h = currentCanvas.height;
+    const dataObj = currentContext.getImageData(0, 0, w, h);
+    const data = dataObj.data;
+    let p = 0;
+
+    const [clipX, clipY, clipW, clipH] = getClipping();
+    const ymax = clipY + clipH, xmax = clipX + clipW;
+    const col: ColorRGBA = [0, 0, 0, 0];
+    for (let y = clipY; y < ymax; y++) {
+      p = 4 * (clipX + w * y);
+      for (let x = clipX; x < xmax; x++) {
+        col[0] = data[p];
+        col[1] = data[p + 1];
+        col[2] = data[p + 2];
+        col[3] = data[p + 3];
+        analyzer(col, x, y);
+      }
+    }
+}
+
+export function reducePixels<T>(reducer: PixelReducer<T>, initial: T): T {
+    let result = initial;
+    analyzePixels((c) => result = reducer(initial, c));
+    return result;
 }
 
 export function filter(filterFunc: Filter, buffer = false): void {
@@ -79,5 +125,9 @@ function prepareBufferOrGetter(buffer: BUFFER_TYPE, imageData: ImageData): GetCo
 }
 
 exposeToWindow({
-    filter
+    filter,
+    getPixelGetter,
+    getChannelGetters,
+    analyzePixels,
+    reducePixels
 });

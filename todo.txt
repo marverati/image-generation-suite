@@ -30,6 +30,7 @@ Milestone 1: Useful & fun
 [X] Importing user pictures via drag&drop or button in preview (30m)
 [X] Interactive animation mode using animate((dt, t) => renderCode)
 [ ] Animation pausing, resuming, stopping, variable playback speed
+[ ] Animation mouse & keyboard access
 
 Milestone 2: Usability
 [ ] Document Code
@@ -80,7 +81,7 @@ Milestone 3: Additional features
 Examples:
 [ ] Particle Animations
 [ ] 30 Day Challenges
-[ ] Box Blur
+[X] Box Blur
 [ ] Gauss Blur, using two consecutive box blurs
 [ ] Game of Life
 [X] Hue Brush
