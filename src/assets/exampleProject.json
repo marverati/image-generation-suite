@@ -45,6 +45,11 @@
                         "code": "useCanvas(previewCanvas)\nsetSize(512);\n\nconst v = _number('Red Pos', 0.5, 0.001, 0.999, 0.001)\n\nconst grad = new ColorGradient({\n  0: 255,\n  [v]: [255, 0, 0],\n  1: 0\n}, \"cos3\");\n\ngenRadial((a, d) => grad.get(d))"
                     },
                     {
+                        "name": "distortion",
+                        "type": "code",
+                        "code": "\n\nscaleBelow(1000);\n\nfilter((c, x, y, getPixel) => {\n  const dx = 30 * (wobble(x * 26) + wobble(y * 31));\n  const dy = 30 * (wobble(x * 33) + wobble(y * 38));\n  return getPixel(x + dx, y + dy);\n}, true, true, true);\n// î three booleans: buffered, interpolated &\n// image size limited getter function"
+                    },
+                    {
                         "name": "fill",
                         "type": "code",
                         "code": "\n\nfill(200); // greyscale values between 0 and 255\n\nfill(\"red\"); // CSS colors\n\nclear(); // fully transparent black\n\nfill(); // fully opaque black\n\nfill([0, 128, 255]); // RGB array (blue)\n\nfill([255, 128, 0, 0.3]); // RGBA array (transparent orange)"
@@ -52,7 +57,7 @@
                     {
                         "name": "filter",
                         "type": "code",
-                        "code": "/*\nThis snippet works with whatever is currently in the canvas. You may e.g. run the generator example before running this.\nAlternatively, if that feature is already implemented, you can drag and drop any picture/photo from your hard drive into the preview canvas on the right, and then run the filter.\n\nThis filter simply exchanges color channels. Executing it three times in a row should yield the original result again.\n*/\n\n// Ensure the given image is scaled down to a size below 1000x1000; only used here because description encourages loading photos, which may have many megapixels, making the filter function quite slow; scaling it down beforehand is pretty quick however\n// scaleBelow(1000); // enable when implemented!\n\nfilter((c, x, y) => {\n  return [c[1], c[2], c[0], c[3]];\n});"
+                        "code": "/*\nThis snippet works with whatever is currently in the canvas. You may e.g. run the generator example before running this.\nAlternatively, if that feature is already implemented, you can drag and drop any picture/photo from your hard drive into the preview canvas on the right, and then run the filter.\n\nThis filter simply exchanges color channels. Executing it three times in a row should yield the original result again.\n*/\n\n// Ensure the given image is scaled down to a size below 1000x1000; only used here because description encourages loading photos, which may have many megapixels, making the filter function quite slow; scaling it down beforehand is pretty quick however\nscaleBelow(1000); // enable when implemented!\n\nfilter((c, x, y) => {\n  return [c[1], c[2], c[0], c[3]];\n});"
                     },
                     {
                         "name": "generator",
@@ -146,5 +151,5 @@
             }
         ]
     },
-    "date": 1614290210178
+    "date": 1614706969507
 }
