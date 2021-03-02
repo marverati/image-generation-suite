@@ -6,7 +6,7 @@
         <div class="canvas-space">
           <div class="canvas-div">
             <canvas ref="previewCanvas" width=812 height=512 @click="openPreview()" @resize="handleResize()"
-                :class="{ 'alpha-background': showBackground, dropping: isDropping }" />
+                :class="{ 'alpha-background': showBackground, dropping: isDropping }" tabindex="1" />
             <!-- Canvas Setting -->
             <div class="canvas-settings-spacing">
               <div class="spacing" />
@@ -30,6 +30,7 @@ import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
 
 import { useCanvas } from '@/imaging/imageUtil';
+import { isAnimating } from '@/imaging/animation';
 
 const dummyCanvas = document.createElement("canvas");
 
@@ -69,6 +70,10 @@ export default defineComponent({
   },
   methods: {
     openPreview() {
+      // Don't react to canvas clicks if animation is running, then animation code determines mouse interaction
+      if (isAnimating()) {
+        return;
+      }
       const img = new Image();
       img.onload = () => {
         this.project.setPreviewImage(img);
