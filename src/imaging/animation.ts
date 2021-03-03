@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { exposeToWindow } from "@/util";
+import { clamp, exposeToWindow } from "@/util";
 import { getPreviewCanvas } from "./imageUtil";
 
 type KeyState = {
@@ -23,24 +23,58 @@ type MouseState = {
     right: KeyState;
 }
 
+type AnimationInterface = {
+    pause: () => void;
+    resume: () => void;
+    stop: () => void;
+}
+
 interface InteractionState {
     mouse: MouseState;
     getKey: (key: string) => KeyState;
+    animation: AnimationInterface;
 }
 
+let animationStarted = false;
 let animationRunning = false;
+let internalStopAnimation = () => { /* noop */ };
+let internalResumeAnimation = () => { /* noop */ };
 
 export function isAnimating() {
-    return animationRunning;
+    return animationStarted;
+}
+
+export function isAnimationPlaying() {
+    return animationStarted && animationRunning;
+}
+
+export function stopAnimation() {
+    animationRunning = false;
+    animationStarted = false;
+    internalStopAnimation();
+}
+
+export function pauseAnimation() {
+    animationRunning = false;
+}
+
+export function resumeAnimation() {
+    if (animationStarted) {
+        animationRunning = true;
+        internalResumeAnimation();
+    }
 }
 
 export async function animate(renderFunc: (dt: number, t: number, interactionState: InteractionState) => (void | boolean), maxTime = 10000,
-        baseSpeed = 1, t0 = 0, minStep = 0): Promise<void> {
-    let done = false;
-    const cancel = false; // let and expose to caller so they may cancel the thing
-    // let cancelFunction = () => {
-    //   cancel = true;
-    // }
+        baseSpeed = 1, t0 = 0, minStep = 0, maxStep = 100): Promise<void> {
+    let done = false, cancel = false;
+    let now: number, total = t0;
+
+    // Stop previous animation if any was running
+    internalStopAnimation();
+    internalStopAnimation = () => { cancel = true; internalStopAnimation = () => { /* noop */ }; }
+    internalResumeAnimation = () => { now = Date.now(); }
+    animationStarted = true;
 
     const keyStates: Record<string, KeyState> = {};
     const mouseState: MouseState = {
@@ -58,24 +92,30 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
     };
     const interactionState: InteractionState = {
         getKey: (key: string) => { ensureKeyExistence(key); return keyStates[key]; },
-        mouse: mouseState
+        mouse: mouseState,
+        animation: {
+            stop: stopAnimation,
+            pause: pauseAnimation,
+            resume: resumeAnimation
+        }
     };
 
     const cnv = getPreviewCanvas();
     addListeners(cnv);
 
-    let now = Date.now(), total = t0;
+    now = Date.now();
     const speed = baseSpeed; // use let to be able to vary speed based on UI or pausing
     animationRunning = true;
     function runFrame() {
         // Handle timing
         const prev = now;
         const newNow = Date.now();
-        // Only update time and render things when minimum time step is surpassed (usually this is always true)
-        if (newNow - prev >= minStep) {
+        // Only update time and render things when animation is not paused, and when
+        // minimum time step is surpassed (usually this is always true)
+        if (animationRunning && !cancel && newNow - prev >= minStep) {
             now = newNow;
             const diff = now - prev;
-            const dt = speed * diff;
+            const dt = clamp(speed * diff, -maxStep, maxStep);
             total += dt;
 
             // mouse and keys
@@ -86,8 +126,8 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
             done = !!renderFunc(dt, total, interactionState);
         }
         
-
-        if (total < maxTime && !cancel && !done) {
+        // Set up next frame, or end animation
+        if (total < maxTime && !cancel && !done && animationStarted) {
             requestAnimationFrame(runFrame);
         } else {
             removeListeners(cnv);
@@ -193,4 +233,4 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
     }
 }
 
-exposeToWindow({ animate });
+exposeToWindow({ animate, stopAnimation, pauseAnimation, resumeAnimation, isAnimating, isAnimationPlaying });
