@@ -98,18 +98,18 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
     runFrame();
 
     function addListeners(canvas: HTMLCanvasElement): void {
-        canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mousedown", handleMouseDown);
-        canvas.addEventListener("mouseup", handleMouseUp);
+        document.body.addEventListener("mousemove", handleMouseMove);
+        document.body.addEventListener("mouseup", handleMouseUp);
         canvas.addEventListener("keydown", handleKeyDown);
         canvas.addEventListener("keyup", handleKeyUp);
         canvas.focus();
     }
 
     function removeListeners(canvas: HTMLCanvasElement): void {
-        canvas.removeEventListener("mousemove", handleMouseMove);
         canvas.removeEventListener("mousedown", handleMouseDown);
-        canvas.removeEventListener("mouseup", handleMouseUp);
+        document.body.removeEventListener("mousemove", handleMouseMove);
+        document.body.removeEventListener("mouseup", handleMouseUp);
         canvas.removeEventListener("keydown", handleKeyDown);
         canvas.removeEventListener("keyup", handleKeyUp);
         canvas.blur();
@@ -156,7 +156,19 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
     }
 
     function handleMouseMove(e: MouseEvent): void {
-        // TODO
+        const rect = cnv.getBoundingClientRect();
+        const mxAbs = e.clientX - rect.x, myAbs = e.clientY - rect.y;
+        const mx = mxAbs * cnv.width / cnv.clientWidth, my = myAbs * cnv.height / cnv.clientHeight;
+        mouseState.dx = mx - mouseState.x;
+        mouseState.dy = my - mouseState.y;
+        mouseState.x = mx;
+        mouseState.y = my;
+        const xrel = mx / cnv.width, yrel = my / cnv.height;
+        mouseState.dxrel = xrel - mouseState.xrel;
+        mouseState.dyrel = yrel - mouseState.yrel;
+        mouseState.xrel = xrel;
+        mouseState.yrel = yrel;
+        mouseState.inside = (xrel >= 0 && xrel < 1 && yrel >= 0 && yrel < 1);
     }
 
     function handleKeyDown(e: KeyboardEvent): void {
