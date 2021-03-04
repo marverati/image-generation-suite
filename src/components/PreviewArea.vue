@@ -7,8 +7,20 @@
           <div class="canvas-div">
             <canvas ref="previewCanvas" width=812 height=512 @click="openPreview()" @resize="handleResize()"
                 :class="{ 'alpha-background': showBackground, dropping: isDropping }" tabindex="1" />
+            <!-- Animation controls -->
+            <div :class="{'canvas-settings-spacing': true, 'animation': true, 'hidden': !animationStarted, 'offset': !animationStarted}">
+              <div class="spacing" />
+              <div class="canvas-settings">
+                <button @click="toggleAnimation()" v-html="togglePauseLabel"></button>
+                <button @click="stopAnimation()">&#x23F9;</button>
+                <select name="animation-speed" v-model="animationSpeed">
+                  <option v-for="speed in animationSpeeds" :key="speed" :value="speed">x{{speed}}</option>
+                </select>
+              </div>
+              <div class="spacing" />
+            </div>
             <!-- Canvas Setting -->
-            <div class="canvas-settings-spacing">
+            <div :class="{'canvas-settings-spacing': true, 'settings': true, 'offset': !animationStarted}">
               <div class="spacing" />
               <div class="canvas-settings">
                 <span class="size">{{sizeLabel}}</span>
@@ -30,7 +42,7 @@ import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
 
 import { useCanvas } from '@/imaging/imageUtil';
-import { isAnimating } from '@/imaging/animation';
+import { getAnimationSpeed, pauseAnimation, registerAnimationStateListener, resumeAnimation, setAnimationSpeed, stopAnimation } from '@/imaging/animation';
 
 const dummyCanvas = document.createElement("canvas");
 
@@ -43,7 +55,11 @@ export default defineComponent({
     canvas: dummyCanvas,
     updater: 0,
     isDropping: false,
-    dragCount: 0
+    dragCount: 0,
+    animationStarted: false,
+    animationRunning: false,
+    animationSpeed: "1",
+    animationSpeeds: [ "0.125", "0.25", "0.5", "0.75", "1", "1.25", "1.5", "2", "3", "4", "8", "16", "32" ].reverse()
   }},
   computed: {
     context (): CanvasRenderingContext2D {
@@ -60,6 +76,9 @@ export default defineComponent({
       if (this.updater == null) { return ''; }
       const f = this.canvas.offsetWidth / this.canvas.width;
       return "Zoom = " + Math.round(100 * f) + "%";
+    },
+    togglePauseLabel (): string {
+      return this.animationRunning ? "&#x23f8;" : "&#x25B6;";
     }
   },
   props: {
@@ -71,7 +90,7 @@ export default defineComponent({
   methods: {
     openPreview() {
       // Don't react to canvas clicks if animation is running, then animation code determines mouse interaction
-      if (isAnimating()) {
+      if (this.animationStarted) {
         return;
       }
       const img = new Image();
@@ -124,8 +143,23 @@ export default defineComponent({
         ctx.globalCompositeOperation = "copy";
         ctx.drawImage(img, 0, 0);
         ctx.restore();
-        console.log("Applied image to canvas: ", img);
       }
+    },
+    updateAnimationState(started: boolean, running: boolean) {
+      this.animationStarted = started;
+      this.animationRunning = running;
+      this.animationSpeed = "" + getAnimationSpeed();
+      return false;
+    },
+    toggleAnimation() {
+      if (this.animationRunning) {
+        pauseAnimation();
+      } else {
+        resumeAnimation();
+      }
+    },
+    stopAnimation() {
+      stopAnimation();
     }
   },
   watch: {
@@ -136,12 +170,18 @@ export default defineComponent({
     context: function(c) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).previewContext = c;
+    },
+    animationSpeed: function(s, prev) {
+      if (s !== prev) {
+        setAnimationSpeed(+s);
+      }
     }
   },
   mounted () {
     this.canvas = this.$refs.previewCanvas as HTMLCanvasElement;
     useCanvas(this.canvas);
     setInterval(() => this.forceUpdate(), 5000);
+    registerAnimationStateListener(this.updateAnimationState.bind(this));
   }
 });
 </script>
@@ -196,9 +236,37 @@ export default defineComponent({
         .canvas-settings-spacing {
           display: flex;
           justify-content: center;
+          transition: opacity 0.5s ease, transform 0.5s ease;
+          opacity: 1;
+          transform: translate(0px, 0px);
+          z-index: -1;
+
+          &.hidden {
+            opacity: 0;
+          }
+
+          &.offset {
+            transform: translate(0px, -32px);
+          }
 
           .spacing {
             flex-grow: 1;
+          }
+
+          &.animation {
+            button {
+              display: inline-block;
+              font-size: 100%;
+              width: 32px;
+              border: 1px solid #ccc;
+              margin: 4px;
+            }
+            select {
+              font-size: 65%;
+            }
+            .canvas-settings {
+              border: none;
+            }
           }
         }
 
@@ -206,7 +274,7 @@ export default defineComponent({
           display: block;
           border: 1px solid #ccc;
           border-radius: 2px;
-          margin: 12px auto;
+          margin: 12px auto 0 auto;
           padding: 4px;
           display: inline-block;
 

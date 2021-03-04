@@ -1,5 +1,6 @@
 import Project from "@/classes/Project";
 import Snippet from "@/classes/Snippet";
+import { setAnimationSpeed } from "@/imaging/animation";
 import { getCanvas } from "@/imaging/imageUtil";
 
 export default class ProjectState {
@@ -20,7 +21,11 @@ export default class ProjectState {
   }
 
   public openSnippet(snippet: Snippet | null): void {
-    this.currentlyOpenSnippet = snippet;
+    if (snippet !== this.currentlyOpenSnippet) {
+      this.currentlyOpenSnippet = snippet;
+      // Changing snippet resets animation speed
+      setAnimationSpeed();
+    }
   }
 
   public getOpenSnippet(): Snippet | null {

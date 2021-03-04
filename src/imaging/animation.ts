@@ -39,6 +39,7 @@ let animationStarted = false;
 let animationRunning = false;
 let internalStopAnimation = () => { /* noop */ };
 let internalResumeAnimation = () => { /* noop */ };
+let animationUISpeed = 1;
 
 export function isAnimating() {
     return animationStarted;
@@ -48,20 +49,47 @@ export function isAnimationPlaying() {
     return animationStarted && animationRunning;
 }
 
+export function setAnimationSpeed(speed = 1) {
+    animationUISpeed = speed;
+}
+
+export function getAnimationSpeed() {
+    return animationUISpeed;
+}
+
 export function stopAnimation() {
     animationRunning = false;
     animationStarted = false;
     internalStopAnimation();
+    emitAnimationState();
 }
 
 export function pauseAnimation() {
     animationRunning = false;
+    emitAnimationState();
 }
 
 export function resumeAnimation() {
     if (animationStarted) {
         animationRunning = true;
         internalResumeAnimation();
+        emitAnimationState();
+    }
+}
+
+type AnimationStateCallback = (started: boolean, playing: boolean) => boolean;
+const animationStateCallbacks: AnimationStateCallback[] = [];
+
+export function registerAnimationStateListener(callback: AnimationStateCallback): void {
+    animationStateCallbacks.push(callback);
+}
+
+function emitAnimationState(): void {
+    for (let i = animationStateCallbacks.length - 1; i >= 0; i--) {
+        const del = animationStateCallbacks[i](animationStarted, animationRunning);
+        if (del) {
+            animationStateCallbacks.splice(i, 1);
+        }
     }
 }
 
@@ -72,7 +100,7 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
 
     // Stop previous animation if any was running
     internalStopAnimation();
-    internalStopAnimation = () => { cancel = true; internalStopAnimation = () => { /* noop */ }; }
+    internalStopAnimation = () => { cancel = true; stopThisAnimation(); internalStopAnimation = () => { /* noop */ }; }
     internalResumeAnimation = () => { now = Date.now(); }
     animationStarted = true;
 
@@ -104,8 +132,8 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
     addListeners(cnv);
 
     now = Date.now();
-    const speed = baseSpeed; // use let to be able to vary speed based on UI or pausing
     animationRunning = true;
+    emitAnimationState();
     function runFrame() {
         // Handle timing
         const prev = now;
@@ -115,6 +143,7 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
         if (animationRunning && !cancel && newNow - prev >= minStep) {
             now = newNow;
             const diff = now - prev;
+            const speed = baseSpeed * animationUISpeed;
             const dt = clamp(speed * diff, -maxStep, maxStep);
             total += dt;
 
@@ -130,12 +159,21 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
         if (total < maxTime && !cancel && !done && animationStarted) {
             requestAnimationFrame(runFrame);
         } else {
-            removeListeners(cnv);
-            animationRunning = false;
+            // If animation was cancelled, then stopThisAnimation() has been executed already
+            if (!cancel) {
+                stopThisAnimation();
+            }
         }
     }
 
     runFrame();
+
+    function stopThisAnimation() {
+        removeListeners(cnv);
+        animationRunning = false;
+        animationStarted = false;
+        emitAnimationState();
+    }
 
     function addListeners(canvas: HTMLCanvasElement): void {
         canvas.addEventListener("mousedown", handleMouseDown);

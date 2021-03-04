@@ -58,6 +58,7 @@ Milestone 2: Usability
 [ ] Error handling and display
 [ ] disable UI while script is running
 [ ] filter and gen showing previews every ~2 seconds when running too long
+[ ] Refactor animation state into proper class with clear state
 
 Milestone 3: Additional features
 [ ] importing / running other snippets
