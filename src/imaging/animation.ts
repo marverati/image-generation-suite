@@ -39,6 +39,7 @@ let animationStarted = false;
 let animationRunning = false;
 let internalStopAnimation = () => { /* noop */ };
 let internalResumeAnimation = () => { /* noop */ };
+let internalSetProgress = (p: number) => { p && 0 };
 let animationUISpeed = 1;
 
 export function isAnimating() {
@@ -77,11 +78,21 @@ export function resumeAnimation() {
     }
 }
 
+export function setAnimationProgress(p: number) {
+    internalSetProgress(p);
+}
+
 type AnimationStateCallback = (started: boolean, playing: boolean) => boolean;
 const animationStateCallbacks: AnimationStateCallback[] = [];
+type AnimationProgressCallback = (progress: number) => boolean;
+const animationProgressCallbacks: AnimationProgressCallback[] = [];
 
 export function registerAnimationStateListener(callback: AnimationStateCallback): void {
     animationStateCallbacks.push(callback);
+}
+
+export function regsiterAnimationProgressListener(callback: AnimationProgressCallback): void {
+    animationProgressCallbacks.push(callback);
 }
 
 function emitAnimationState(): void {
@@ -93,6 +104,15 @@ function emitAnimationState(): void {
     }
 }
 
+function emitAnimationProgress(p: number): void {
+    for (let i = animationProgressCallbacks.length - 1; i >= 0; i--) {
+        const del = animationProgressCallbacks[i](p);
+        if (del) {
+            animationProgressCallbacks.splice(i, 1);
+        }
+    }
+}
+
 export async function animate(renderFunc: (dt: number, t: number, interactionState: InteractionState) => (void | boolean), maxTime = 10000,
         baseSpeed = 1, t0 = 0, minStep = 0, maxStep = 100): Promise<void> {
     let done = false, cancel = false;
@@ -100,6 +120,7 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
 
     // Stop previous animation if any was running
     internalStopAnimation();
+    internalSetProgress = (p: number) => { total = t0 + p * (maxTime - t0); }
     internalStopAnimation = () => { cancel = true; stopThisAnimation(); internalStopAnimation = () => { /* noop */ }; }
     internalResumeAnimation = () => { now = Date.now(); }
     animationStarted = true;
@@ -146,6 +167,9 @@ export async function animate(renderFunc: (dt: number, t: number, interactionSta
             const speed = baseSpeed * animationUISpeed;
             const dt = clamp(speed * diff, -maxStep, maxStep);
             total += dt;
+            if (dt > 0) {
+                emitAnimationProgress((total - t0) / (maxTime - t0));
+            }
 
             // mouse and keys
             updateKeyState(mouseState.left);

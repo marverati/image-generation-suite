@@ -1,7 +1,6 @@
 import Project from "@/classes/Project";
 import Snippet from "@/classes/Snippet";
 import { setAnimationSpeed } from "@/imaging/animation";
-import { getCanvas } from "@/imaging/imageUtil";
 
 export default class ProjectState {
   private project: Project;

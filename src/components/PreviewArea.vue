@@ -11,6 +11,7 @@
             <div :class="{'canvas-settings-spacing': true, 'animation': true, 'hidden': !animationStarted, 'offset': !animationStarted}">
               <div class="spacing" />
               <div class="canvas-settings">
+                <progress-slider :value="animationProgress" @input="forwardAnimationProgress" />
                 <button @click="toggleAnimation()" v-html="togglePauseLabel"></button>
                 <button @click="stopAnimation()">&#x23F9;</button>
                 <select name="animation-speed" v-model="animationSpeed">
@@ -39,16 +40,18 @@
 
 <script lang="ts">
 import ProjectState from './ProjectState';
+import ProgressSlider from './subcomponents/ProgressSlider.vue';
 import { defineComponent } from 'vue';
 
 import { useCanvas } from '@/imaging/imageUtil';
-import { getAnimationSpeed, pauseAnimation, registerAnimationStateListener, resumeAnimation, setAnimationSpeed, stopAnimation } from '@/imaging/animation';
+import { getAnimationSpeed, pauseAnimation, registerAnimationStateListener, regsiterAnimationProgressListener, resumeAnimation, setAnimationProgress, setAnimationSpeed, stopAnimation } from '@/imaging/animation';
 
 const dummyCanvas = document.createElement("canvas");
 
 export default defineComponent({
   name: 'PreviewArea',
   components: {
+    ProgressSlider
   },
   data: () => { return {
     showBackground: true,
@@ -58,6 +61,7 @@ export default defineComponent({
     dragCount: 0,
     animationStarted: false,
     animationRunning: false,
+    animationProgress: 0,
     animationSpeed: "1",
     animationSpeeds: [ "0.125", "0.25", "0.5", "0.75", "1", "1.25", "1.5", "2", "3", "4", "8", "16", "32" ].reverse()
   }},
@@ -151,6 +155,10 @@ export default defineComponent({
       this.animationSpeed = "" + getAnimationSpeed();
       return false;
     },
+    updateAnimationProgress(p: number) {
+      this.animationProgress = p;
+      return false;
+    },
     toggleAnimation() {
       if (this.animationRunning) {
         pauseAnimation();
@@ -160,6 +168,9 @@ export default defineComponent({
     },
     stopAnimation() {
       stopAnimation();
+    },
+    forwardAnimationProgress(p: number) {
+      setAnimationProgress(p);
     }
   },
   watch: {
@@ -182,6 +193,7 @@ export default defineComponent({
     useCanvas(this.canvas);
     setInterval(() => this.forceUpdate(), 5000);
     registerAnimationStateListener(this.updateAnimationState.bind(this));
+    regsiterAnimationProgressListener(this.updateAnimationProgress.bind(this));
   }
 });
 </script>
