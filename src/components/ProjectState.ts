@@ -1,6 +1,6 @@
 import Project from "@/classes/Project";
 import Snippet from "@/classes/Snippet";
-import { setAnimationSpeed } from "@/imaging/animation";
+import { animator } from "@/imaging/imageUtil";
 
 export default class ProjectState {
   private project: Project;
@@ -23,7 +23,7 @@ export default class ProjectState {
     if (snippet !== this.currentlyOpenSnippet) {
       this.currentlyOpenSnippet = snippet;
       // Changing snippet resets animation speed
-      setAnimationSpeed();
+      animator.setAnimationSpeed();
     }
   }
 

@@ -43,8 +43,7 @@ import ProjectState from './ProjectState';
 import ProgressSlider from './subcomponents/ProgressSlider.vue';
 import { defineComponent } from 'vue';
 
-import { useCanvas } from '@/imaging/imageUtil';
-import { getAnimationSpeed, pauseAnimation, registerAnimationStateListener, regsiterAnimationProgressListener, resumeAnimation, setAnimationProgress, setAnimationSpeed, stopAnimation } from '@/imaging/animation';
+import { useCanvas, animator } from '@/imaging/imageUtil';
 
 const dummyCanvas = document.createElement("canvas");
 
@@ -152,7 +151,7 @@ export default defineComponent({
     updateAnimationState(started: boolean, running: boolean) {
       this.animationStarted = started;
       this.animationRunning = running;
-      this.animationSpeed = "" + getAnimationSpeed();
+      this.animationSpeed = "" + animator.getAnimationSpeed();
       return false;
     },
     updateAnimationProgress(p: number) {
@@ -161,16 +160,16 @@ export default defineComponent({
     },
     toggleAnimation() {
       if (this.animationRunning) {
-        pauseAnimation();
+        animator.pauseAnimation();
       } else {
-        resumeAnimation();
+        animator.resumeAnimation();
       }
     },
     stopAnimation() {
-      stopAnimation();
+      animator.stopAnimation();
     },
     forwardAnimationProgress(p: number) {
-      setAnimationProgress(p);
+      animator.setAnimationProgress(p);
     }
   },
   watch: {
@@ -184,7 +183,7 @@ export default defineComponent({
     },
     animationSpeed: function(s, prev) {
       if (s !== prev) {
-        setAnimationSpeed(+s);
+        animator.setAnimationSpeed(+s);
       }
     }
   },
@@ -192,8 +191,8 @@ export default defineComponent({
     this.canvas = this.$refs.previewCanvas as HTMLCanvasElement;
     useCanvas(this.canvas);
     setInterval(() => this.forceUpdate(), 5000);
-    registerAnimationStateListener(this.updateAnimationState.bind(this));
-    regsiterAnimationProgressListener(this.updateAnimationProgress.bind(this));
+    animator.registerAnimationStateListener(this.updateAnimationState.bind(this));
+    animator.registerAnimationProgressListener(this.updateAnimationProgress.bind(this));
   }
 });
 </script>

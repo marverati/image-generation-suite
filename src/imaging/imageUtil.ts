@@ -7,8 +7,8 @@ import './color';
 import { blendManyColors } from './color';
 import './interpolation';
 import './ColorGradient';
-import './animation';
 import { Filter, filter } from './filter';
+import Animator from './Animator';
 
 declare global {
   interface HTMLCanvasElement {
@@ -21,8 +21,12 @@ HTMLCanvasElement.prototype.use = function() {
   return this;
 }
 
+
 export let currentCanvas: HTMLCanvasElement = document.createElement("canvas");
 export let currentContext: CanvasRenderingContext2D = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
+
+export const animator = new Animator(getPreviewCanvas);
+const animate = animator.animate.bind(animator);
 
 let clipX = 0, clipY = 0, clipW = Infinity, clipH = Infinity;
 
@@ -209,4 +213,4 @@ export function getHueDiff(a: number, b: number): number {
 
 exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
     genRadial, genRel, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
-    clipRect, clipRel, getClipping });
+    clipRect, clipRel, getClipping, animator, animate });
