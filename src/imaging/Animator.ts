@@ -144,6 +144,7 @@ export default class Animator {
         this.internalResumeAnimation = () => { now = Date.now(); }
         this.animationStarted = true;
 
+        const observedKeys: string[] = [];
         const keyStates: Record<string, KeyState> = {};
         const mouseState: MouseState = {
             x: 0,
@@ -193,6 +194,7 @@ export default class Animator {
                 // mouse and keys
                 updateKeyState(mouseState.left);
                 updateKeyState(mouseState.right);
+                observedKeys.forEach(key => updateKeyState(keyStates[key]));
 
                 // Run provided render code
                 done = !!renderFunc(dt, total, interactionState);
@@ -248,7 +250,7 @@ export default class Animator {
         }
 
         function handleMouseDown(e: MouseEvent): void {
-            if (!mouseState.inside) {
+            if (mouseState.inside) {
                 if (e.button === 0) {
                     setKeyState(mouseState.left, true);
                 } else if (e.button === 2) {
@@ -260,7 +262,7 @@ export default class Animator {
         }
 
         function handleMouseUp(e: MouseEvent): void {
-            if (!mouseState.inside) {
+            if (mouseState.inside) {
                 if (e.button === 0) {
                     setKeyState(mouseState.left, false);
                 } else if (e.button === 2) {
@@ -299,6 +301,7 @@ export default class Animator {
 
         function ensureKeyExistence(key: string): void {
             if (!keyStates[key]) {
+                observedKeys.push(key);
                 keyStates[key] = {
                     pressed: false,
                     down: false,

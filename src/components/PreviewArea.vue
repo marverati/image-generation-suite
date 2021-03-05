@@ -265,12 +265,18 @@ export default defineComponent({
           }
 
           &.animation {
+            button, select, div {
+              vertical-align: middle;
+              margin-left: 4px;
+              margin-right: 4px;
+            }
             button {
               display: inline-block;
               font-size: 100%;
               width: 32px;
               border: 1px solid #ccc;
               margin: 4px;
+              height: 21px;
             }
             select {
               font-size: 65%;

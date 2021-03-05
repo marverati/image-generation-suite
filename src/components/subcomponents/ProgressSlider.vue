@@ -1,6 +1,8 @@
 <template>
   <div ref="slider" class="progress-slider" @mousedown="handleMouseDown">
-    <div class="progress-bar" :style="{width: progressPercentage}">
+    <div class="progress-slider-visible">
+      <div class="progress-bar" :style="{width: progressPercentage}">
+      </div>
     </div>
   </div>
 </template>
@@ -67,14 +69,24 @@ export default defineComponent({
 .progress-slider {
   position: relative;
   display: inline-block;
-  width: 100px;
-  height: 20px;
-  border: 1px solid #ccc;
-  .progress-bar {
-    height: 100%;
+  cursor: pointer;
+  width: 180px;
+  height: 22px;
+  .progress-slider-visible {
     position: absolute;
-    left: 0px;
-    background-color: green;
+    width: 100%;
+    height: 50%;
+    border: 1px solid #ccc;
+    top: 25%;
+    .progress-bar {
+      height: 100%;
+      position: absolute;
+      left: 0px;
+      background-color: #009000;
+      &:hover {
+        background-color: #00a000;
+      }
+    }
   }
 }
 

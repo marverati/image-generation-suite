@@ -84,7 +84,7 @@ Examples:
 [ ] 30 Day Challenges
 [X] Box Blur
 [ ] Gauss Blur, using two consecutive box blurs
-[ ] Game of Life
+[X] Game of Life
 [X] Hue Brush
 [X] Rainbow Paint
 [ ] Raytracing
