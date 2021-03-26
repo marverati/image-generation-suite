@@ -15,12 +15,16 @@ export abstract class ProjectStorage {
             return Promise.resolve(false);
         }
         const obj = project.toJSON();
-        const json = JSON.stringify(obj);
+        const json = this.stringify(obj);
         return this.storeJson(json, project.getName());
     }
 
     public isAvailable(): boolean {
         return true;
+    }
+
+    protected stringify(obj: Record<string, any>): string {
+        return JSON.stringify(obj);
     }
 
     /**

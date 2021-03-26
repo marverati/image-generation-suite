@@ -8,8 +8,9 @@ Milestone 1: Useful & fun
   [X] Importing project tree from text
   [X] Saving project tree to local storage
   [X] Loading project tree from local storage
-  [ ] Refactor loading, move from ProjectTree to IGS / ProjectState / somewhere (40m)
-  [ ] Strategy pattern to save in different places (45m)
+  [X] Refactor loading, move from ProjectTree to ProjectStorage classes
+  [X] Support of saving in different places
+  [X] Implement Import/Export as ProjectStorage class
   [ ] Create simple save/load PHP server (2h)
   [ ] Upload project tree to PHP server for single user (1h)
   [ ] Load project tree from PHP server (30m)

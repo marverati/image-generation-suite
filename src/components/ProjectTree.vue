@@ -22,6 +22,7 @@ import { defineComponent } from 'vue';
 import Project, { ProjectJSON } from '@/classes/Project';
 import { downloadText, exposeToWindow } from '@/util';
 import { projectStorageManager } from '@/classes/ProjectStorageManager';
+import { importExportStorage } from '@/classes/ProjectStorageSetup';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const initialJson = require('@/assets/exampleProject.json');
@@ -47,27 +48,26 @@ export default defineComponent({
         this.project.openSnippet(snippet);
       }
     },
-    exportProject() {
+    async exportProject() {
       console.log("Exporting project...");
       try {
         // First save all snippets
-        this.project.getProject().getAllSnippets().forEach(s => s.save());
-        // Then generate JSON
-        const obj = this.project.getProject().toJSON();
-        const json = JSON.stringify(obj);
-        downloadText("igs_workspace.txt", json);
-        alert("Note: to import a workspace json, simply drop the txt file onto the project tree");
+        const project = this.project.getProject();
+        project.getAllSnippets().forEach(s => s.save());
+        await importExportStorage.store(project);
+        setTimeout(() => alert("Note: to import a workspace json, simply drop the txt file onto the project tree"), 1000);
         console.info("Exported successfully");
       } catch(e) {
         console.error("Something went wrong, exporting failed!");
         console.error(e);
       }
     },
-    save() {
+    async save() {
       console.log("Saving project...");
       try {
-        this.project.getProject().getAllSnippets().forEach(s => s.save());
-        projectStorageManager.store(this.project.getProject());
+        const project = this.project.getProject();
+        project.getAllSnippets().forEach(s => s.save());
+        await projectStorageManager.store(project);
       } catch(e) {
         console.error("Something went wrong, saving failed!");
         console.error(e);
@@ -86,14 +86,6 @@ export default defineComponent({
       }
       return false;
     },
-    loadJSON(json: string) {
-      console.log("Trying to load json: ", json.substr(0, 32) + "...");
-      if (!json) {
-        return;
-      }
-      const obj = JSON.parse(json);
-      this.loadObject(obj);
-    },
     loadObject(obj: ProjectJSON) {
       const project = Project.fromJSON(obj);
       this.$emit("switchProject", project);
@@ -108,37 +100,17 @@ export default defineComponent({
         this.resetProject();
       }
     },
-    handleFileDrop(event: DragEvent): void {
-      event.preventDefault();
-      event.stopPropagation();
-      const files = event.dataTransfer?.files ?? [];
-      if (files.length === 1) {
-        const file = files[0];
-        if (file.type === "text/plain") {
-          const sure = confirm("Are you sure you want to import another igs project?"
-              + " Your current project will be lost. Ensure to export it beforehand.");
-          if (sure) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                this.loadJSON(e.target?.result as string);
-                this.$nextTick(() => alert("Project imported"));
-              } catch (e) {
-                alert("Something went wrong during import. See console for details.");
-                console.error(e);
-              }
-            }
-            reader.readAsBinaryString(file);
-          } else {
-            alert("Import aborted");
-          }
-        } else {
-          console.error("Invalid file dropped; only plain text files containing json are allowed");
-        }
-      } else {
-        console.error("Illegal number of files dropped; just single text file allowed");
-      }
+    async handleFileDrop(event: DragEvent) {
       this.stopDrop();
+      try {
+        const project = await importExportStorage.importDroppedFile(event);
+        if (project) {
+          this.$emit("switchProject", project);
+          this.$nextTick(() => alert("Project imported"));
+        }
+      } catch(e) {
+        alert(e);
+      }
     },
     stopDrop(): void {
       this.isDropping = false;
