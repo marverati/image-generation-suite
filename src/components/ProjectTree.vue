@@ -21,6 +21,7 @@ import ProjectState from './ProjectState';
 import { defineComponent } from 'vue';
 import Project, { ProjectJSON } from '@/classes/Project';
 import { downloadText, exposeToWindow } from '@/util';
+import { projectStorageManager } from '@/classes/ProjectStorageManager';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const initialJson = require('@/assets/exampleProject.json');
@@ -65,35 +66,20 @@ export default defineComponent({
     save() {
       console.log("Saving project...");
       try {
-        // First save all snippets
         this.project.getProject().getAllSnippets().forEach(s => s.save());
-        // Then generate JSON
-        const obj = this.project.getProject().toJSON();
-        const json = JSON.stringify(obj);
-        // Save in different slots to always persist previous few versions
-        const id = (+(localStorage.getItem("slot") ?? 0) % 10) + 1;
-        localStorage.setItem("slot", "" + id);
-        // Save
-        const slotKey = "project" + id;
-        localStorage.setItem(slotKey, json);
-        console.info("Saved successfully to slot " + slotKey);
+        projectStorageManager.store(this.project.getProject());
       } catch(e) {
         console.error("Something went wrong, saving failed!");
         console.error(e);
       }
     },
-    load(slotNum?: number): boolean {
+    async load(): Promise<boolean> {
       try {
-        if (slotNum == null) {
-          slotNum = +(localStorage.getItem("slot") ?? 0);
+        const project = await projectStorageManager.load("project");
+        if (project) {
+          this.$emit("switchProject", project);
+          return true;
         }
-        const slotKey = "project" + slotNum;
-        const json = localStorage.getItem(slotKey);
-        if (!json) {
-          throw new Error("Stored JSON for key '" + slotKey + "' not found!");
-        }
-        this.loadJSON(json);
-        return true;
       } catch(e) {
         console.error("Something went wrong, loading failed!");
         console.error(e);

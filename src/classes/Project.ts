@@ -9,15 +9,27 @@ export type ProjectJSON = {
   date: number;
 }
 
+/**
+ * A project is basically an IGS workspace. One user will usually have one such project (although more would be imaginable in the future).
+ * The project contains a tree of folders and snippets, accessed via the root folder.
+ * A Project object only contains the data and no session dependent state information. It can be serialized and deserialized in order to
+ * enable loading and saving.
+ */
 export default class Project {
   public readonly root: Folder;
+  private name: string;
 
-  constructor(root?: Folder) {
+  constructor(root?: Folder, name = "project") {
     if (root) {
       this.root = root;
     } else {
       this.root = new Folder("workspace", this);
     }
+    this.name = name;
+  }
+
+  public getName() {
+    return this.name;
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types

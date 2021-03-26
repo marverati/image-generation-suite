@@ -2,6 +2,12 @@ import Project from "@/classes/Project";
 import Snippet from "@/classes/Snippet";
 import { animator } from "@/imaging/imageUtil";
 
+/**
+ * A ProjectState object is basically a wrapper around a Project (or user workspace) containing all the state
+ * information that's relevant within a session of a user. While the Project object only contains persistable
+ * data (primarily the code snippets and folder structure), a ProjectState adds information such as which
+ * snippet is currently opened, allows executing the current snippet and handles errors while doing so.
+ */
 export default class ProjectState {
   private project: Project;
   private currentlyOpenSnippet: Snippet | null = null;

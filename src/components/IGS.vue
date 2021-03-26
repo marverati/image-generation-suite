@@ -18,8 +18,10 @@ import CodingArea from './CodingArea.vue';
 import Parameters from './Parameters.vue';
 import PreviewArea from './PreviewArea.vue';
 import PreviewLayer from './PreviewLayer.vue';
+import { setupProjectStorage } from '@/classes/ProjectStorageSetup';
 
 let projectReference: Project = new Project();
+setupProjectStorage();
 
 export default defineComponent({
   name: 'IGS',
