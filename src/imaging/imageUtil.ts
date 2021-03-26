@@ -7,6 +7,7 @@ import './color';
 import { blendManyColors } from './color';
 import './interpolation';
 import './ColorGradient';
+import './perlin';
 import { Filter, filter } from './filter';
 import Animator from './Animator';
 
@@ -186,7 +187,7 @@ export function genRadial(generator: Generator, subsamples?: number): void {
   const size = Math.max(w, h) / 2;
   const cx = (w + 1) / 2, cy = (h + 1) / 2;
   gen(((x, y) => {
-    const dx = x - cy, dy = y - cy;
+    const dx = x - cx, dy = y - cy;
     const ang = Math.atan2(dx, dy), dis = Math.sqrt(dx * dx + dy * dy) / size;
     return generator(ang, dis);
   }) as Generator, subsamples);

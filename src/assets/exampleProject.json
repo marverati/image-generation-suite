@@ -60,6 +60,11 @@
                         "code": "/*\nThis snippet works with whatever is currently in the canvas. You may e.g. run the generator example before running this.\nAlternatively, if that feature is already implemented, you can drag and drop any picture/photo from your hard drive into the preview canvas on the right, and then run the filter.\n\nThis filter simply exchanges color channels. Executing it three times in a row should yield the original result again.\n*/\n\n// Ensure the given image is scaled down to a size below 1000x1000; only used here because description encourages loading photos, which may have many megapixels, making the filter function quite slow; scaling it down beforehand is pretty quick however\nscaleBelow(1000); // enable when implemented!\n\nfilter((c, x, y) => {\n  return [c[1], c[2], c[0], c[3]];\n});"
                     },
                     {
+                        "name": "fractalNoise",
+                        "type": "code",
+                        "code": "setSize(512);\n\nconst layers = 6;\nconst ampFac = 0.6;\nconst initialAmp = 80;\nconst freq = 1 / 100;\nconst freqFac = 2;\n\ngen((x, y) => {\n    let v = 127.5, amp = initialAmp, f = freq;\n    for (let l = 0; l < layers; l++) {\n      v += amp * blob2d(70000 + x * f, 252423 + y * f);\n      amp *= ampFac;\n      f *= freqFac;\n    }\n    return v;\n})"
+                    },
+                    {
                         "name": "generator",
                         "type": "code",
                         "code": "\nsetSize(1024, 1024);\n\ngen((x, y) => {\n  const r = 127.5 + 127.5 * Math.sin(0.01 * (x + y));\n  const g = 127.5 + 127.5 * Math.sin(0.001 * (x - 512) * (y - 512));\n  const b = 127.5 + 127.5 * Math.sin(x * 0.02) * Math.sin(y * 0.01);\n  return [r, g, b, 255];\n});"
@@ -78,6 +83,16 @@
                         "name": "params",
                         "type": "code",
                         "code": "\nsetSize(512, 512);\n\n// Parameters\nconst lanes = _number(\"Lanes\", 3, 0, 32, 1);\nconst disScale = _number(\"Scaling\", 0.02, 0, 0.5, 0.001);\nconst invert = _boolean(\"Invert\", false);\nconst title = _string(\"Title\", \"\");\nconst gradient = _enum(\"Colorization\", \"grayscale\", [\"grayscale\", \"fire\", \"water\", \"rainbow\"]);\n\nconst gradients = {\n  \"grayscale\": new ColorGradient([0, 255]),\n  \"fire\": new ColorGradient([[80,0,0], [255,0,0], [255,255,0], 255]),\n  \"water\": new ColorGradient([[0,0,100],[0,120,220],[30,160,250],[120,220,255]]),\n  \"rainbow\": ColorGradient.rainbow\n}\nconst grad = gradients[gradient];\n\nconst c = getCanvas();\nconst cx = c.width / 2, cy = c.height / 2;\n\n// Generate spirale\ngen((x, y) => {\n  const dx = x - cx, dy = y - cy;\n  const dis = Math.sqrt(dx * dx + dy * dy);\n  const angle = Math.atan2(dx, dy) * (invert ? -1 : 1);\n  const v = Math.sin(dis * disScale + angle * lanes);\n  return grad.get(0.5 + 0.5 * v);\n});\n\n// Add title string\nif (title != \"\") {\n  context.fillStyle = \"black\";\n  context.textAlign = \"center\";\n  context.font = \"36px Arial\";\n  context.fillText(title, w / 2 + 1, 40 + 1);\n  context.fillStyle = \"red\";\n  context.fillText(title, w / 2, 40);\n}"
+                    },
+                    {
+                        "name": "perlinAnimation",
+                        "type": "code",
+                        "code": "\nsetSize(256);\n\nanimate((dt, t) => {\n  gen((x, y) => 127.5 + 127.5 * perlin3d(x / 30, y / 30, t / 3000))\n}, 30000)"
+                    },
+                    {
+                        "name": "perlinNoise",
+                        "type": "code",
+                        "code": "setSize(512);\n\ngen((x, y) => {\n  x /= 64; y /= 64;\n  return 127.5 + 127.5 * perlin2d(x + 1, y)\n})"
                     },
                     {
                         "name": "subsampling",
@@ -157,6 +172,16 @@
                         "name": "new Code",
                         "type": "code",
                         "code": "console.log(\"This is the new code! Wow!\");"
+                    },
+                    {
+                        "name": "perlinTest",
+                        "type": "code",
+                        "code": "\nsetSize(400, 200)\n\ncontext.fillRect(0, h / 2, w, 1);\n\nfor (let px = 0; px < w; px++) {\n  if (px % 50 == 0) {\n    context.fillRect(px, 0, 1, h);\n  }\n  const rx = px / 50;\n  const ry = perlin(rx);\n  const py = h / 2 - h * ry;\n  context.fillRect(px, py, 3, 3);\n}"
+                    },
+                    {
+                        "name": "temp",
+                        "type": "code",
+                        "code": "const cell = 64;\n\nfilter((c, x, y) => {\n  if (Math.abs(c[0] - 127.5) <= 1) {\n    return [255,0,0];\n  } else if (x % cell == 0 || y % cell == 0){\n    return blendColors(c, [0,0,255,255], 0.05);\n  } else { return c; }\n})"
                     }
                 ]
             },
@@ -172,5 +197,5 @@
             }
         ]
     },
-    "date": 1614946485687
+    "date": 1616762423147
 }
