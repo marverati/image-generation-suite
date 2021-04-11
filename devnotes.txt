@@ -1,0 +1,37 @@
+Fractals
+    [ ] make small & performant enough to interact in almost real time (~5fps+)?
+    [ ] interactive mouse coord dependent julia fractal
+    [ ] vary a lot of things in the formulas, get creative
+    [ ] e.g. julia but dis / angle affect iteration coordinates
+    [ ] for colorization, use repeating sawtooth pattern (depth % 1 e.g. for continuous depths)
+    [ ] apply repeating black shading to either angle or depth for 3D effect (e.g. as in video The Hardest Trip Mandelbrot Zoom)
+    [ ] for animation, create flow-in effect by adding time to colorization function 
+    [ ] colorization can be more interesting than just repeating [0,1] color pattern; e.g. have shading repeat in [0,1] but color change in other frequency, e.g. [0, 30]
+    [ ] run julia/mandelbrot first, then use resulting x=depth and y=angle of final param as basis for lookup in e.g. sierpinski carpet 
+    [ ] alternatively use a user photo instead of sierpinski carpet for lookup and see how that looks, but both will probably be super skewed as depth & angle move on very volatile scales
+    [ ] after iteration, angle of diverging point to previous one could also be of interest? But interpolation bit trickier then to avoid jumps
+    [ ] standard julia, but a user photo RGB values (or median of surroundings) offset the start coord x/y or the iteration itself. Can you then see photo shape in resulting fractal?
+    [ ] arbitrary [0,1]->[0,1] splines, fractally added on top of each other can generate 1D fractals (each time halving wavelength and amplitude)
+    [ ] e.g. sin(x) + sin(2x)/2 + sin(4x)/4 + sin(8x)/8 + sin(16x)/16 + sin(32x)/32 + sin(64x)/64
+    [ ] or alternating sin(x) - sin(2x)/2 + sin(4x)/4 - sin(8x)/8 + sin(16x)/16 - sin(32x)/32 + sin(64x)/64
+    [ ] maybe more interesting in 2D with heightmaps fractally added on top of each other
+    [ ] Mandelbrot with color mapping 99% black and only very thin gold lines, maybe once per depth iteration or every 10 or whatever
+    [ ] Segment replacing fractal, but rotate whole segment of each iteration by time around center or [0.5,0] or so...
+    [ ] can auto zoom into fractal by rendering full scene and picking most "interesting" from n random fac 20 or so zoom-ins
+        [ ] "interesting" = most color variation / contrast or so
+    [ ] julia parameter animation, but instead of cos-ing between predefined point, move around space seemlessly
+        [ ] maybe even with always same velocity (as opposed to just a wobble that can occasionally come to standstills) by moving with same speed in a direction and only changing the direction itself based on current position
+    [ ] is it possible to fade between two different julia sub-scenes (e.g. different position and zoom level), so not blend geometrically, but depth-levels or so?
+        [ ] if this works statically, could be used to "fake" infinite fractal zoom by always going to zoom level 10,000 or so and then subtly fading to a scene with zoomlevel 20 and starting all over
+        [ ] for this too the automatic search could be used to identify most suitable target fade position to have lowest difference to current one
+    [ ] changing render depth (with simple boolean coloring) while keeping position/zoom the same can also make interesting animation
+
+Perlin Noise
+    [ ] apply mapping to each layer of fractal perlin noise individually; i.e. [0,1]->[0,1] mappings, such as x², sqrt(x), (0.5 - 0.5*cos(pi*x))³...
+    [ ] maybe use this for a moon crater kind look?
+    
+Hypothetical idea:
+    have neural net learn to predict next frame in a fractal zoom based on current frame. Is that possible?
+    Then use that prediction net and give it real photos as starting point, generating a fractal zoom in based on them.
+    Also, this would not ever require more computing power no matter how far you zoom in, as it's not actually evaluating a real fractal. 
+    So you could zoom for hours and hours and the work that needs to be done remains the same per frame.
