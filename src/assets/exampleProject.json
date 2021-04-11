@@ -142,9 +142,14 @@
                         "code": "setSize(1024);\ngen((x, y) => x & y);"
                     },
                     {
+                        "name": "julia",
+                        "type": "code",
+                        "code": "setSize(512);\nclipRect();\n\nconst re = +_number(\"re\", 0.5, -1, 1, 0.0002)\nconst im = +_number(\"im\", 0, -1, 1, 0.0001)\n\nconst iterations = +_number(\"iterations\", 100, 1, 512, 1);\n\nconst grad = new ColorGradient([\n  0, 255\n], \"linear\", \"mirror\");\n\ngenCentered((x, y) => {\n  let a = x, b = y, tmp = 0, i = 0;\n  for (; i < iterations && a * a + b * b < 4; i++) {\n    // c -> c² + (x,y)\n    tmp = a * a - b * b;\n    b = 2 * a * b + im;\n    a = tmp + re;\n  }\n  return i >= iterations ? 0 : grad.get(i / 100);\n}, 4);"
+                    },
+                    {
                         "name": "mandelbrot",
                         "type": "code",
-                        "code": "setSize(800, 512);\nclipRect();\n\nconst iterations = 100;\n\nconst grad = new ColorGradient([\n  [0, 0, 0, 0], 0,\n  [255, 0, 0],\n  [255, 255, 0],\n  255,\n  0, [0, 0, 0, 0]\n]);\n\ngenCentered((x, y) => {\n  let a = 0, b = 0, tmp = 0, i = 0;\n  for (; i < iterations && a * a + b * b < 4; i++) {\n    // c -> c² + (x,y)\n    tmp = a * a - b * b;\n    b = 2 * a * b + y;\n    a = tmp + x;\n  }\n  return grad.get(i / iterations);\n}, 2);"
+                        "code": "setSize(800, 512);\nclipRect();\n\nconst iterations = 100;\n\nconst grad = new ColorGradient([\n  [0, 0, 0, 0], 0,\n  [255, 0, 0],\n  [255, 255, 0],\n  255,\n  0, [0, 0, 0, 0]\n]);\n\ngenCentered((x, y) => {\n  let a = 0, b = 0, tmp = 0, i = 0;\n  for (; i < iterations && a * a + b * b < 4; i++) {\n    // c -> c² + (x,y)\n    tmp = a * a - b * b;\n    b = 2 * a * b + y;\n    a = tmp + x;\n  }\n  return grad.get(i / iterations);\n}, 1);"
                     }
                 ]
             },
@@ -197,5 +202,5 @@
             }
         ]
     },
-    "date": 1616762423147
+    "date": 1618143074317
 }

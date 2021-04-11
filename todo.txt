@@ -93,7 +93,7 @@ Examples:
 [ ] Heightmap Paint -> smooth brushes cause smooth landscapes, not desired, more natural rough mountain brushes?
 [ ] Loading Animation folder containing many different loading animations
 [ ] Zoomable Mandelbrot
-[ ] Parameterized Julia Set
+[X] Parameterized Julia Set
 [ ] Pythagoras Tree 
 [ ] Sierpinski Triangle / Carpet
 [ ] Segment Fractal
