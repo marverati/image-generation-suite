@@ -2,7 +2,7 @@
 import { shallowObjectsDiffer } from "@/util";
 import AbstractProjectItem from "./AbstractProjectItem";
 
-export type ParamType = "range" | "number" | "boolean" | "string" | "enum";
+export type ParamType = "range" | "number" | "boolean" | "string" | "enum" | "action";
 
 export type SnippetParameter = {
   label: string;
@@ -86,8 +86,12 @@ export default class Snippet extends AbstractProjectItem {
     this.informParamListeners();
   }
 
+  public findParam(label: string): SnippetParameter | null {
+    return this.params.find(p => p.label === label) ?? null;
+  }
+
   public getParam(label: string, type: ParamType, initialValue: any, properties: Record<string, any> = {}): SnippetParameter {
-    let param = this.params.find(p => p.label === label);
+    let param = this.findParam(label);
     if (!param) {
       param = {
         label,

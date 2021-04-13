@@ -52,6 +52,8 @@ Milestone 2: Usability
   [X] Number Input
   [X] String Input
   [X] Enum
+  [X] Button
+  [X] getParam/setParam/mapParam
   [ ] 2D slider
   [ ] Color Gradients / Hue Slider
 [ ] render legend on slider parameters (min, max, ...)
@@ -96,5 +98,5 @@ Examples:
 [X] Parameterized Julia Set
 [ ] Pythagoras Tree 
 [ ] Sierpinski Triangle / Carpet
-[ ] Segment Fractal
+[X] Segment Fractal
 [ ] Replacing Sky

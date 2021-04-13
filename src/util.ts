@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WatchCallback } from "vue";
-
-type WatcherType = { immediate: boolean; handler: Function };
+import seedrandom from 'seedrandom';
 
 export function rnd(minOrMax = 1, max?: number): number {
   if (max == null) {
@@ -104,4 +103,4 @@ export function getRangeMapping(fromMin: number, fromMax: number, toMin: number,
   return (v: number) => toMin + (v - fromMin) * scale;
 }
 
-exposeToWindow({ rnd, absPow, wobble, mapRange, getRangeMapping, range, clamp });
+exposeToWindow({ rnd, absPow, wobble, mapRange, getRangeMapping, range, clamp, seedrandom });

@@ -7,7 +7,7 @@
         <input type="checkbox" v-model="autoRefresh" :disabled="params.length <= 0" />
         <button :disabled="autoRefresh" @click="refresh()">&#128472;</button>
         <div class="parameter" v-for="param in params" :key="param.label">
-          <label>{{param.label}}:</label>
+          <label :class="param.type === 'action' ? 'hidden' : ''">{{param.label}}:</label>
           <!-- Num Slider -->
           <input v-if="param.type == 'range'" :min="param.data.min" :max="param.data.max"
               :step="param.data.step" type="range" v-model="param.value" @change="refresh()" />
@@ -22,6 +22,8 @@
           <select v-if="param.type == 'enum'" v-model="param.value" @change="refresh()">
             <option v-for="name in param.data.values" :key="name">{{name}}</option>
           </select>
+          <!-- Action Button -->
+          <button v-if="param.type == 'action'" @click="if (param.value() !== false) { refresh(); }">{{param.label}}</button>
         </div>
       </div>
   </div>
@@ -97,6 +99,9 @@ export default defineComponent({
       text-align: right;
       margin-right: 16px;
       margin-left: 8px;
+      &.hidden {
+        visibility: hidden;
+      }
     }
 
     button {
@@ -108,6 +113,10 @@ export default defineComponent({
 
     .parameter {
       display: block;
+
+      button {
+        margin: 12px 0px;
+      }
     }
 
   }
