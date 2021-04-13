@@ -17,7 +17,7 @@ Milestone 1: Useful & fun
   [X] Allow user to manually export/import (without localstorage) (30m)
 [ ] More helper functions in imageUtil and ArrayExtension
   [X] setSize, scale, scaleBelow (30m)
-  [ ] Crop, resize (keep content) (30m)
+  [X] Crop, resize (keep content) (30m)
   [X] Value mapping (15m)
   [ ] Coordinate system transformations (1h)
   [X] HSL conversion (30m)

@@ -151,6 +151,12 @@ export function scaleBelow(width: number, height = width, highQuality = false) {
   }
 }
 
+export function crop(x: number, y: number, width = currentCanvas.width - x, height = currentCanvas.height - y) {
+  const cnv = cloneCanvas(currentCanvas);
+  setSize(width, height);
+  currentContext.drawImage(cnv, -x, -y);
+}
+
 export function gen(generator: Generator, subsamples = 1): void {
   if (subsamples <= 1) {
     filter(((_, x, y) => generator(x, y)) as Filter);
@@ -213,5 +219,5 @@ export function getHueDiff(a: number, b: number): number {
 }
 
 exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
-    genRadial, genRel, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow,
+    genRadial, genRel, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow, crop,
     clipRect, clipRel, getClipping, animator, animate });
