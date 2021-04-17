@@ -99,4 +99,5 @@ Examples:
 [ ] Pythagoras Tree 
 [ ] Sierpinski Triangle / Carpet
 [X] Segment Fractal
+[ ] Segment Fractal Mutation Exploration
 [ ] Replacing Sky

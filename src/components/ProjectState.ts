@@ -47,8 +47,8 @@ export default class ProjectState {
         code = "if (this.w == null) Object.defineProperty(this, 'w', { get: function() {return previewCanvas.width} });"
             + "if (this.h == null) Object.defineProperty(this, 'h', { get: function() {return previewCanvas.height} });"
             + "clipRect();" + code;
-        const func = new Function("canvas", "context", code);
-        func(canvas, canvas.getContext("2d"));
+        const func = new Function("canvas", "context", "refresh", code);
+        func(canvas, canvas.getContext("2d"), () => this.runCode());
       } catch (e) {
         this.handleError(e);
       }

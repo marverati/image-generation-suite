@@ -127,7 +127,7 @@ export default class Snippet extends AbstractProjectItem {
     }
   }
 
-  private informParamListeners(): void {
+  public informParamListeners(): void {
     this.paramListeners.forEach(l => l.method.call(l.context));
   }
 

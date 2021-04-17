@@ -37,7 +37,11 @@ export function _mapParam(label: string, valueMapper: (oldValue: any) => any) {
   if (!object) {
     return null;
   }
-  object.value = valueMapper(object.value);
+  const newValue = valueMapper(object.value);
+  if (newValue !== object.value) {
+    object.value = newValue;
+    snippet.informParamListeners();
+  }
   return object;
 }
 
