@@ -13,7 +13,7 @@ import Animator from './Animator';
 
 declare global {
   interface HTMLCanvasElement {
-    use(): void;
+    use(): this;
   }
 }
 
