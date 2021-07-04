@@ -4,11 +4,11 @@
 import { exposeToWindow } from '@/util';
 import './ArrayExtension';
 import './color';
-import { blendManyColors } from './color';
 import './interpolation';
 import './ColorGradient';
 import './perlin';
-import { Filter, filter } from './filter';
+import './generator';
+import './transform';
 import Animator from './Animator';
 
 declare global {
@@ -33,9 +33,7 @@ let clipX = 0, clipY = 0, clipW = Infinity, clipH = Infinity;
 
 export type ColorRGB = [number, number, number];
 export type ColorRGBA = [number, number, number, number];
-export type CssColor = ColorRGB | ColorRGBA | number | string; 
-export type Generator = ((x: number, y: number) => number) | ((x: number, y: number) => ColorRGB)
-    | ((x: number, y: number) => ColorRGBA);
+export type CssColor = ColorRGB | ColorRGBA | number | string;
 
 export function useCanvas(canvas: HTMLCanvasElement = getPreviewCanvas()) {
   currentCanvas = canvas;
@@ -157,67 +155,23 @@ export function crop(x: number, y: number, width = currentCanvas.width - x, heig
   currentContext.drawImage(cnv, -x, -y);
 }
 
-export function gen(generator: Generator, subsamples = 1): void {
-  if (subsamples <= 1) {
-    filter(((_, x, y) => generator(x, y)) as Filter);
+export type CoordTransform = (x: number, y: number) => [number, number];
+export let currentTransform: CoordTransform | null = null;
+
+export function transformCoords(transform: CoordTransform | null) {
+  if (currentTransform == null || transform == null) {
+    currentTransform = transform;
   } else {
-    const step = 1 / subsamples;
-    const off = -(1 - step) / 2;
-    filter((_, x, y) => {
-      const colors = [];
-      for (let sy = 0; sy < subsamples; sy++) {
-        const py = y + off + sy * step;
-        for (let sx = 0; sx < subsamples; sx++) {
-          colors.push(generator(x + off + sx * step, py));
-        }
-      }
-      return blendManyColors(colors as (number[] | ColorRGB[] | ColorRGBA[]));
-    });
+    const prevTransform = currentTransform;
+    currentTransform = (x, y) => transform(...prevTransform(x, y));
   }
 }
 
-export function genRel(generator: Generator, subsamples?: number): void {
-  const w = currentCanvas.width, h = currentCanvas.height;
-  gen(((x, y) => generator(x / w, y / h)) as Generator, subsamples);
-}
-
-export function genCentered(generator: Generator, subsamples?: number): void {
-  const w = currentCanvas.width, h = currentCanvas.height;
-  const cx = (w + 1) / 2, cy = (h + 1) / 2;
-  const size = Math.min(cx, cy);
-  gen(((x, y) => generator((x - cx) / size, (y - cy) / size)) as Generator, subsamples);
-}
-
-export function genRadial(generator: Generator, subsamples?: number): void {
-  const w = currentCanvas.width, h = currentCanvas.height;
-  const size = Math.max(w, h) / 2;
-  const cx = (w + 1) / 2, cy = (h + 1) / 2;
-  gen(((x, y) => {
-    const dx = x - cx, dy = y - cy;
-    const ang = Math.atan2(dx, dy), dis = Math.sqrt(dx * dx + dy * dy) / size;
-    return generator(ang, dis);
-  }) as Generator, subsamples);
-}
-
-
-export function fill(c: CssColor | number): void {
-  currentContext.save();
-  currentContext.globalCompositeOperation = "copy";
-  currentContext.fillStyle = (c instanceof Array ? c.toRGBA() : (c === +c) ? [c, c, c].toRGBA() : c) as string;
-  currentContext.fillRect(-Number.MAX_SAFE_INTEGER / 2, -Number.MAX_SAFE_INTEGER / 2,
-      Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
-  currentContext.restore();
-}
-
-export function clear(): void {
-  fill([0, 0, 0, 0]);
-}
 
 export function getHueDiff(a: number, b: number): number {
   const diff = (a - b) % 1;
   return diff > 0.5 ? 1 - diff : diff < -0.5 ? diff + 1 : diff;
 }
 
-exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, gen, genCentered,
-    genRadial, genRel, fill, clear, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow, crop,
-    clipRect, clipRel, getClipping, animator, animate });
+exposeToWindow({useCanvas, createCanvas, cloneCanvas, getCanvas, getContext, setSize, getHueDiff, scaleFast, scaleSmooth, scaleSize, scaleBelow, crop,
+    clipRect, clipRel, getClipping, animator, animate, transformCoords });

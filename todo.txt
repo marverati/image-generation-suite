@@ -19,7 +19,7 @@ Milestone 1: Useful & fun
   [X] setSize, scale, scaleBelow (30m)
   [X] Crop, resize (keep content) (30m)
   [X] Value mapping (15m)
-  [ ] Coordinate system transformations (1h)
+  [X] Coordinate system transformations (1h)
   [X] HSL conversion (30m)
   [X] Array affect methods (20m)
   [X] Color Gradients (30m)

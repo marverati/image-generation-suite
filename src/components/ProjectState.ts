@@ -2,6 +2,13 @@ import Project from "@/classes/Project";
 import Snippet from "@/classes/Snippet";
 import { animator } from "@/imaging/imageUtil";
 
+const initialCode = `
+if (this.w == null) Object.defineProperty(this, 'w', { get: function() {return previewCanvas.width} });
+if (this.h == null) Object.defineProperty(this, 'h', { get: function() {return previewCanvas.height} });
+clipRect();
+transformCoords();
+`
+
 /**
  * A ProjectState object is basically a wrapper around a Project (or user workspace) containing all the state
  * information that's relevant within a session of a user. While the Project object only contains persistable
@@ -44,9 +51,7 @@ export default class ProjectState {
       try {
         const canvas = (window as any).previewCanvas as HTMLCanvasElement;
         // Add w & h getters to code
-        code = "if (this.w == null) Object.defineProperty(this, 'w', { get: function() {return previewCanvas.width} });"
-            + "if (this.h == null) Object.defineProperty(this, 'h', { get: function() {return previewCanvas.height} });"
-            + "clipRect();" + code;
+        code = initialCode + code;
         const func = new Function("canvas", "context", "refresh", code);
         func(canvas, canvas.getContext("2d"), () => this.runCode());
       } catch (e) {
